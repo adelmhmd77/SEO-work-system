@@ -9,20 +9,22 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:        #0a0c10;
-      --surface:   #111318;
-      --surface2:  #181c24;
-      --border:    #1f2535;
-      --text:      #e2e8f8;
-      --muted:     #5a6380;
-      --adel:      #f59e0b;
-      --ahmed:     #7c3aed;
-      --pool:      #0ea5e9;
-      --danger:    #ef4444;
-      --success:   #10b981;
-      --adel-dim:  rgba(245,158,11,0.12);
-      --ahmed-dim: rgba(124,58,237,0.12);
-      --pool-dim:  rgba(14,165,233,0.12);
+      --bg:          #0a0c10;
+      --surface:     #111318;
+      --surface2:    #181c24;
+      --border:      #1f2535;
+      --text:        #e2e8f8;
+      --muted:       #5a6380;
+      --adel:        #f59e0b;
+      --ahmed:       #7c3aed;
+      --youssef:     #10b981;
+      --pool:        #0ea5e9;
+      --danger:      #ef4444;
+      --success:     #10b981;
+      --adel-dim:    rgba(245,158,11,0.12);
+      --ahmed-dim:   rgba(124,58,237,0.12);
+      --youssef-dim: rgba(16,185,129,0.12);
+      --pool-dim:    rgba(14,165,233,0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -60,9 +62,10 @@
     .nav-btn:hover { background: var(--surface2); color: var(--text); }
     .nav-btn.active { background: var(--surface2); color: var(--text); }
     .nav-btn .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .dot-pool  { background: var(--pool); }
-    .dot-adel  { background: var(--adel); }
-    .dot-ahmed { background: var(--ahmed); }
+    .dot-pool    { background: var(--pool); }
+    .dot-adel    { background: var(--adel); }
+    .dot-ahmed   { background: var(--ahmed); }
+    .dot-youssef { background: var(--youssef); }
     .count-badge {
       margin-left: auto; font-family: 'DM Mono', monospace; font-size: 11px;
       background: var(--border); color: var(--muted); padding: 1px 7px; border-radius: 20px;
@@ -120,6 +123,7 @@
     .btn-pool    { background: var(--pool);    color: #fff; }
     .btn-adel    { background: var(--adel);    color: #0a0c10; }
     .btn-ahmed   { background: var(--ahmed);   color: #fff; }
+    .btn-youssef { background: var(--youssef); color: #fff; }
     .btn-danger  { background: var(--danger);  color: #fff; }
     .btn-ghost   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
     .btn-success { background: var(--success); color: #fff; }
@@ -128,7 +132,7 @@
     /* STATS */
     .stats-row { display: flex; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card {
-      flex: 1; min-width: 120px; background: var(--surface);
+      flex: 1; min-width: 110px; background: var(--surface);
       border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px;
     }
     .stat-label {
@@ -151,9 +155,10 @@
     }
     @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     .card:hover { border-color: #2a3050; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .card[data-assign="adel"]  { border-left: 3px solid var(--adel); }
-    .card[data-assign="ahmed"] { border-left: 3px solid var(--ahmed); }
-    .card[data-assign="none"]  { border-left: 3px solid var(--pool); }
+    .card[data-assign="adel"]    { border-left: 3px solid var(--adel); }
+    .card[data-assign="ahmed"]   { border-left: 3px solid var(--ahmed); }
+    .card[data-assign="youssef"] { border-left: 3px solid var(--youssef); }
+    .card[data-assign="none"]    { border-left: 3px solid var(--pool); }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .card-url { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; word-break: break-all; }
@@ -334,7 +339,11 @@
       <span class="dot dot-ahmed"></span> Ahmed
       <span class="count-badge" id="count-ahmed">0</span>
     </button>
-    <div class="sidebar-footer">Lead Command Center<br>v2.0 · Supabase</div>
+    <button class="nav-btn" id="btn-youssef" onclick="setView('youssef')">
+      <span class="dot dot-youssef"></span> Youssef
+      <span class="count-badge" id="count-youssef">0</span>
+    </button>
+    <div class="sidebar-footer">Lead Command Center<br>v2.1 · Supabase</div>
   </aside>
 
   <!-- MAIN -->
@@ -368,6 +377,10 @@
       <div class="stat-card">
         <div class="stat-label">Ahmed Active</div>
         <div class="stat-value" id="stat-ahmed" style="color:var(--ahmed)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Youssef Active</div>
+        <div class="stat-value" id="stat-youssef" style="color:var(--youssef)">0</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Deals Done</div>
@@ -495,7 +508,12 @@
   let pendingDeleteId = null;
   let currentDetailId = null;
 
-  const titles = { none: 'Main Pool', adel: "Adel's Dashboard", ahmed: "Ahmed's Dashboard" };
+  const titles = {
+    none:    'Main Pool',
+    adel:    "Adel's Dashboard",
+    ahmed:   "Ahmed's Dashboard",
+    youssef: "Youssef's Dashboard"
+  };
 
   async function setView(view) {
     currentView = view;
@@ -516,13 +534,16 @@
   }
 
   function updateStats() {
-    document.getElementById('stat-pool').textContent  = allLeads.filter(l => l.assigned_to === 'none').length;
-    document.getElementById('stat-adel').textContent  = allLeads.filter(l => l.assigned_to === 'adel'  && l.status !== 'deal_done').length;
-    document.getElementById('stat-ahmed').textContent = allLeads.filter(l => l.assigned_to === 'ahmed' && l.status !== 'deal_done').length;
-    document.getElementById('stat-deals').textContent = allLeads.filter(l => l.status === 'deal_done').length;
-    document.getElementById('count-none').textContent  = allLeads.filter(l => l.assigned_to === 'none').length;
-    document.getElementById('count-adel').textContent  = allLeads.filter(l => l.assigned_to === 'adel').length;
-    document.getElementById('count-ahmed').textContent = allLeads.filter(l => l.assigned_to === 'ahmed').length;
+    document.getElementById('stat-pool').textContent    = allLeads.filter(l => l.assigned_to === 'none').length;
+    document.getElementById('stat-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel'    && l.status !== 'deal_done').length;
+    document.getElementById('stat-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed'   && l.status !== 'deal_done').length;
+    document.getElementById('stat-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'deal_done').length;
+    document.getElementById('stat-deals').textContent   = allLeads.filter(l => l.status === 'deal_done').length;
+
+    document.getElementById('count-none').textContent    = allLeads.filter(l => l.assigned_to === 'none').length;
+    document.getElementById('count-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel').length;
+    document.getElementById('count-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed').length;
+    document.getElementById('count-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef').length;
   }
 
   function renderFiltered() {
@@ -549,6 +570,34 @@
     if (l.social_tiktok) tags.push(`<span class="soc-tag tiktok">🎵 ${escHtml(l.social_tiktok)}</span>`);
     if (l.social_x)      tags.push(`<span class="soc-tag x">𝕏 ${escHtml(l.social_x)}</span>`);
     return tags.join('');
+  }
+
+  function assignButtons(l) {
+    if (l.assigned_to === 'none') {
+      return `
+        <button class="btn btn-adel    btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'adel',   status:'working'})">→ Adel</button>
+        <button class="btn btn-ahmed   btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'ahmed',  status:'working'})">→ Ahmed</button>
+        <button class="btn btn-youssef btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'youssef',status:'working'})">→ Youssef</button>
+      `;
+    }
+    return `
+      ${l.status !== 'deal_done' ? `<button class="btn btn-success btn-sm" onclick="quickUpdate(${l.id},{status:'deal_done'})">✅ Deal Done</button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'})">↩ Release</button>
+    `;
+  }
+
+  function detailAssignButtons(l) {
+    if (l.assigned_to === 'none') {
+      return `
+        <button class="btn btn-adel"    onclick="quickUpdate(${l.id},{assigned_to:'adel',   status:'working'});closeDetail()">→ Adel</button>
+        <button class="btn btn-ahmed"   onclick="quickUpdate(${l.id},{assigned_to:'ahmed',  status:'working'});closeDetail()">→ Ahmed</button>
+        <button class="btn btn-youssef" onclick="quickUpdate(${l.id},{assigned_to:'youssef',status:'working'});closeDetail()">→ Youssef</button>
+      `;
+    }
+    return `
+      ${l.status !== 'deal_done' ? `<button class="btn btn-success" onclick="quickUpdate(${l.id},{status:'deal_done'});closeDetail()">✅ Deal Done</button>` : ''}
+      <button class="btn btn-ghost" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'});closeDetail()">↩ Release</button>
+    `;
   }
 
   function render(leads) {
@@ -580,13 +629,7 @@
         <div class="hint-text">🖱 Click to view & edit all details</div>
 
         <div class="card-controls" onclick="event.stopPropagation()">
-          ${l.assigned_to === 'none' ? `
-            <button class="btn btn-adel  btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'adel', status:'working'})">→ Adel</button>
-            <button class="btn btn-ahmed btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'ahmed',status:'working'})">→ Ahmed</button>
-          ` : `
-            ${l.status !== 'deal_done' ? `<button class="btn btn-success btn-sm" onclick="quickUpdate(${l.id},{status:'deal_done'})">✅ Deal Done</button>` : ''}
-            <button class="btn btn-ghost btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'})">↩ Release</button>
-          `}
+          ${assignButtons(l)}
           <button class="btn btn-danger btn-sm" onclick="openModal(${l.id})">🗑</button>
         </div>
       </div>`;
@@ -614,13 +657,7 @@
 
     document.getElementById('d-actions').innerHTML = `
       <button class="btn btn-pool" onclick="saveDetail()">💾 Save Changes</button>
-      ${l.assigned_to === 'none' ? `
-        <button class="btn btn-adel"  onclick="quickUpdate(${l.id},{assigned_to:'adel', status:'working'});closeDetail()">→ Adel</button>
-        <button class="btn btn-ahmed" onclick="quickUpdate(${l.id},{assigned_to:'ahmed',status:'working'});closeDetail()">→ Ahmed</button>
-      ` : `
-        ${l.status !== 'deal_done' ? `<button class="btn btn-success" onclick="quickUpdate(${l.id},{status:'deal_done'});closeDetail()">✅ Deal Done</button>` : ''}
-        <button class="btn btn-ghost" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'});closeDetail()">↩ Release</button>
-      `}
+      ${detailAssignButtons(l)}
       <button class="btn btn-danger" onclick="closeDetail();openModal(${l.id})">🗑 Delete</button>
     `;
 
