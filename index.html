@@ -21,6 +21,7 @@
       --pool:        #0ea5e9;
       --danger:      #ef4444;
       --success:     #10b981;
+      --off:         #64748b;
       --adel-dim:    rgba(245,158,11,0.12);
       --ahmed-dim:   rgba(124,58,237,0.12);
       --youssef-dim: rgba(16,185,129,0.12);
@@ -28,7 +29,6 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
     .layout { display: flex; min-height: 100vh; }
 
     /* SIDEBAR */
@@ -36,7 +36,7 @@
       width: 220px; flex-shrink: 0;
       background: var(--surface); border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
-      padding: 28px 16px; position: sticky; top: 0; height: 100vh;
+      padding: 28px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto;
     }
     .logo {
       font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
@@ -52,6 +52,7 @@
       text-transform: uppercase; letter-spacing: 1.5px;
       color: var(--muted); margin-bottom: 8px; padding-left: 10px;
     }
+    .nav-divider { height: 1px; background: var(--border); margin: 14px 0; }
     .nav-btn {
       width: 100%; display: flex; align-items: center; gap: 10px;
       padding: 10px 12px; border-radius: 8px; border: none;
@@ -66,6 +67,8 @@
     .dot-adel    { background: var(--adel); }
     .dot-ahmed   { background: var(--ahmed); }
     .dot-youssef { background: var(--youssef); }
+    .dot-off     { background: var(--off); }
+    .dot-deals   { background: var(--success); }
     .count-badge {
       margin-left: auto; font-family: 'DM Mono', monospace; font-size: 11px;
       background: var(--border); color: var(--muted); padding: 1px 7px; border-radius: 20px;
@@ -82,7 +85,6 @@
       margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
     }
     .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
-
     .search-wrap { position: relative; flex: 1; max-width: 340px; }
     .search-wrap svg {
       position: absolute; left: 12px; top: 50%;
@@ -127,12 +129,13 @@
     .btn-danger  { background: var(--danger);  color: #fff; }
     .btn-ghost   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
     .btn-success { background: var(--success); color: #fff; }
+    .btn-off     { background: var(--off);     color: #fff; }
     .btn-sm { padding: 6px 12px; font-size: 12px; }
 
     /* STATS */
     .stats-row { display: flex; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; }
     .stat-card {
-      flex: 1; min-width: 110px; background: var(--surface);
+      flex: 1; min-width: 100px; background: var(--surface);
       border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px;
     }
     .stat-label {
@@ -155,33 +158,19 @@
     }
     @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     .card:hover { border-color: #2a3050; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-
-    /* Left border — assigned color (default) */
     .card[data-assign="adel"]    { border-left: 3px solid var(--adel); }
     .card[data-assign="ahmed"]   { border-left: 3px solid var(--ahmed); }
     .card[data-assign="youssef"] { border-left: 3px solid var(--youssef); }
     .card[data-assign="none"]    { border-left: 3px solid var(--pool); }
-
-    /* Contact state overrides — these win over assign color */
-    .card[data-contact="snap"] {
-      border-left: 3px solid #FFFC00 !important;
-      background: rgba(255, 252, 0, 0.03) !important;
-    }
-    .card[data-contact="phone"] {
-      border-left: 3px solid #10b981 !important;
-      background: rgba(16, 185, 129, 0.03) !important;
-    }
-    /* Both: split border top=green, bottom=yellow using a pseudo-element overlay */
-    .card[data-contact="both"] {
+    .card[data-contact="snap"]  { border-left: 3px solid #FFFC00 !important; background: rgba(255,252,0,0.03) !important; }
+    .card[data-contact="phone"] { border-left: 3px solid #10b981 !important; background: rgba(16,185,129,0.03) !important; }
+    .card[data-contact="both"]  {
       border-left: 3px solid transparent !important;
       background: linear-gradient(to bottom, rgba(16,185,129,0.05) 50%, rgba(255,252,0,0.04) 50%) !important;
       position: relative;
     }
     .card[data-contact="both"]::before {
-      content: '';
-      position: absolute;
-      left: -3px; top: 0; bottom: 0;
-      width: 3px;
+      content: ''; position: absolute; left: -3px; top: 0; bottom: 0; width: 3px;
       border-radius: 12px 0 0 12px;
       background: linear-gradient(to bottom, #10b981 50%, #FFFC00 50%);
     }
@@ -193,10 +182,11 @@
       flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 9px;
       text-transform: uppercase; letter-spacing: 1px; padding: 3px 8px; border-radius: 20px; font-weight: 500;
     }
-    .badge-new       { background: var(--pool-dim);           color: var(--pool); }
-    .badge-working   { background: var(--adel-dim);           color: var(--adel); }
-    .badge-deal_done { background: rgba(16,185,129,0.15);     color: var(--success); }
-    .badge-rejected  { background: rgba(239,68,68,0.12);      color: var(--danger); }
+    .badge-new       { background: var(--pool-dim);        color: var(--pool); }
+    .badge-working   { background: var(--adel-dim);        color: var(--adel); }
+    .badge-deal_done { background: rgba(16,185,129,0.15);  color: var(--success); }
+    .badge-rejected  { background: rgba(239,68,68,0.12);   color: var(--danger); }
+    .badge-off       { background: rgba(100,116,139,0.15); color: var(--off); }
 
     .card-pills { display: flex; flex-wrap: wrap; gap: 5px; }
     .pill {
@@ -212,15 +202,27 @@
       font-size: 10px; padding: 3px 8px; border-radius: 20px;
       font-family: 'DM Mono', monospace;
     }
-    .soc-tag.snap   { background: rgba(255,252,0,0.12);    color: #FFFC00; }
-    .soc-tag.insta  { background: rgba(225,48,108,0.12);   color: #e1306c; }
-    .soc-tag.tiktok { background: rgba(105,201,208,0.12);  color: #69c9d0; }
-    .soc-tag.x      { background: rgba(255,255,255,0.06);  color: #aaa; }
+    .soc-tag.snap   { background: rgba(255,252,0,0.12);   color: #FFFC00; }
+    .soc-tag.insta  { background: rgba(225,48,108,0.12);  color: #e1306c; }
+    .soc-tag.tiktok { background: rgba(105,201,208,0.12); color: #69c9d0; }
+    .soc-tag.x      { background: rgba(255,255,255,0.06); color: #aaa; }
 
-    /* CONTACT TOGGLES on card */
-    .contact-toggles {
-      display: flex; gap: 7px; flex-wrap: wrap;
+    /* STATUS PICKER */
+    .status-picker { display: flex; gap: 5px; flex-wrap: wrap; }
+    .spick {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--muted);
+      cursor: pointer; transition: all 0.15s; user-select: none;
     }
+    .spick:hover { border-color: var(--muted); color: var(--text); }
+    .spick.active-new       { background: var(--pool-dim);        border-color: var(--pool);    color: var(--pool); }
+    .spick.active-working   { background: var(--adel-dim);        border-color: var(--adel);    color: var(--adel); }
+    .spick.active-deal_done { background: rgba(16,185,129,0.15);  border-color: var(--success); color: var(--success); }
+    .spick.active-off       { background: rgba(100,116,139,0.15); border-color: var(--off);     color: var(--off); }
+
+    /* CONTACT TOGGLES */
+    .contact-toggles { display: flex; gap: 7px; flex-wrap: wrap; }
     .ctoggle {
       display: inline-flex; align-items: center; gap: 6px;
       font-family: 'DM Mono', monospace; font-size: 10px;
@@ -231,34 +233,43 @@
     }
     .ctoggle input { display: none; }
     .ctoggle:hover { border-color: var(--muted); color: var(--text); }
-    .ctoggle.snap-active  {
-      background: rgba(255,252,0,0.1);
-      border-color: rgba(255,252,0,0.45);
-      color: #FFFC00;
-    }
-    .ctoggle.phone-active {
-      background: rgba(16,185,129,0.1);
-      border-color: rgba(16,185,129,0.45);
-      color: #10b981;
-    }
+    .ctoggle.snap-active  { background: rgba(255,252,0,0.1);  border-color: rgba(255,252,0,0.45);  color: #FFFC00; }
+    .ctoggle.phone-active { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.45); color: #10b981; }
 
     .card-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
-
-    .hint-text {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      color: var(--muted); text-align: center; margin-top: 2px;
-    }
+    .hint-text { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-align: center; }
 
     .empty-state {
-      grid-column: 1/-1; text-align: center; padding: 60px 20px;
+      text-align: center; padding: 60px 20px;
       color: var(--muted); font-family: 'DM Mono', monospace; font-size: 13px; line-height: 2;
     }
+    .grid .empty-state { grid-column: 1/-1; }
+
     .spinner {
       width: 24px; height: 24px; border: 2px solid var(--border);
       border-top-color: var(--pool); border-radius: 50%;
       animation: spin 0.7s linear infinite; margin: 60px auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* TABLE VIEW */
+    .table-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .tbl th {
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); padding: 12px 16px; text-align: left; white-space: nowrap;
+    }
+    .tbl td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    .tbl tbody tr:last-child td { border-bottom: none; }
+    .tbl tbody tr { transition: background 0.12s; cursor: pointer; }
+    .tbl tbody tr:hover { background: var(--surface2); }
+    .tbl .td-url { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; }
+    .tbl .td-muted { color: var(--muted); font-size: 12px; }
+    .tbl .td-actions { display: flex; gap: 6px; align-items: center; }
 
     /* DETAIL POPUP */
     #detail-bg {
@@ -267,7 +278,6 @@
       align-items: center; justify-content: center; padding: 20px;
     }
     #detail-bg.show { display: flex; }
-
     #detail-panel {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 16px; width: 100%; max-width: 580px;
@@ -275,11 +285,9 @@
       animation: slideUp 0.22s ease;
     }
     @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-
     .detail-header {
       display: flex; align-items: flex-start; justify-content: space-between;
-      padding: 24px 24px 0; gap: 12px;
-      border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 4px;
+      padding: 24px 24px 18px; gap: 12px; border-bottom: 1px solid var(--border);
     }
     .detail-url { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; word-break: break-all; }
     .detail-close {
@@ -288,19 +296,13 @@
       cursor: pointer; font-size: 16px; flex-shrink: 0; line-height: 1;
     }
     .detail-close:hover { color: var(--text); }
-
     .detail-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 22px; }
-
     .detail-section-title {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      text-transform: uppercase; letter-spacing: 1.5px;
-      color: var(--muted); margin-bottom: 12px;
+      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px;
       display: flex; align-items: center; gap: 8px;
     }
-    .detail-section-title::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-
+    .detail-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .detail-field { display: flex; flex-direction: column; gap: 5px; }
     .detail-field label {
@@ -315,23 +317,20 @@
     }
     .detail-field input:focus { border-color: var(--pool); }
     .detail-field input::placeholder { color: var(--muted); }
-
     .detail-actions {
       display: flex; gap: 8px; flex-wrap: wrap;
-      padding: 0 24px 24px; border-top: 1px solid var(--border); padding-top: 18px;
+      padding: 18px 24px 24px; border-top: 1px solid var(--border);
     }
 
     /* DELETE MODAL */
     #modal-bg {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7); z-index: 300;
-      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.7); z-index: 300; align-items: center; justify-content: center;
     }
     #modal-bg.show { display: flex; }
     #modal {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 28px 32px;
-      max-width: 340px; width: 90%; text-align: center;
+      border-radius: 14px; padding: 28px 32px; max-width: 340px; width: 90%; text-align: center;
     }
     #modal h2 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 10px; }
     #modal p  { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
@@ -358,7 +357,8 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="logo"><span></span> Lead CMD</div>
-    <div class="nav-label">Views</div>
+
+    <div class="nav-label">Active</div>
     <button class="nav-btn active" id="btn-none" onclick="setView('none')">
       <span class="dot dot-pool"></span> Main Pool
       <span class="count-badge" id="count-none">0</span>
@@ -375,7 +375,19 @@
       <span class="dot dot-youssef"></span> Youssef
       <span class="count-badge" id="count-youssef">0</span>
     </button>
-    <div class="sidebar-footer">Lead Command Center<br>v2.2 · Supabase</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-label">Archive</div>
+    <button class="nav-btn" id="btn-deals" onclick="setView('deals')">
+      <span class="dot dot-deals"></span> Deal Done
+      <span class="count-badge" id="count-deals">0</span>
+    </button>
+    <button class="nav-btn" id="btn-off" onclick="setView('off')">
+      <span class="dot dot-off"></span> Off
+      <span class="count-badge" id="count-off">0</span>
+    </button>
+
+    <div class="sidebar-footer">Lead Command Center<br>v2.3 · Supabase</div>
   </aside>
 
   <!-- MAIN -->
@@ -389,7 +401,7 @@
     </div>
 
     <!-- ADD FORM -->
-    <div class="add-form" id="addForm">
+    <div class="add-form" id="addForm" style="display:none">
       <input type="text" id="newUrl"      placeholder="رابط الموقع">
       <input type="text" id="newTraffic"  placeholder="الترافيك (50k)">
       <input type="text" id="newPlatform" placeholder="المنصة (Salla / Zid)">
@@ -403,29 +415,33 @@
         <div class="stat-value" id="stat-pool" style="color:var(--pool)">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Adel Active</div>
+        <div class="stat-label">Adel</div>
         <div class="stat-value" id="stat-adel" style="color:var(--adel)">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Ahmed Active</div>
+        <div class="stat-label">Ahmed</div>
         <div class="stat-value" id="stat-ahmed" style="color:var(--ahmed)">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Youssef Active</div>
+        <div class="stat-label">Youssef</div>
         <div class="stat-value" id="stat-youssef" style="color:var(--youssef)">0</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Deals Done</div>
         <div class="stat-value" id="stat-deals" style="color:var(--success)">0</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">Off</div>
+        <div class="stat-value" id="stat-off" style="color:var(--off)">0</div>
+      </div>
     </div>
 
-    <!-- GRID -->
-    <div class="grid" id="leads-container"><div class="spinner"></div></div>
+    <!-- CONTENT -->
+    <div id="leads-container"><div class="spinner"></div></div>
   </main>
 </div>
 
-<!-- ══ DETAIL POPUP ══ -->
+<!-- DETAIL POPUP -->
 <div id="detail-bg">
   <div id="detail-panel">
     <div class="detail-header">
@@ -435,69 +451,32 @@
       </div>
       <button class="detail-close" onclick="closeDetail()">✕</button>
     </div>
-
     <div class="detail-body">
-
-      <!-- Site info -->
       <div>
         <div class="detail-section-title">معلومات الموقع</div>
         <div class="detail-grid">
-          <div class="detail-field">
-            <label>⚡ قوة الموقع</label>
-            <input type="text" id="d-strength" placeholder="e.g. High / 85">
-          </div>
-          <div class="detail-field">
-            <label>📊 الترافيك التقريبي</label>
-            <input type="text" id="d-traffic" placeholder="e.g. 50k / month">
-          </div>
-          <div class="detail-field">
-            <label>🛒 منصة المتجر</label>
-            <input type="text" id="d-platform" placeholder="Salla / Zid / WooCommerce">
-          </div>
+          <div class="detail-field"><label>⚡ قوة الموقع</label><input type="text" id="d-strength" placeholder="e.g. High / 85"></div>
+          <div class="detail-field"><label>📊 الترافيك التقريبي</label><input type="text" id="d-traffic" placeholder="e.g. 50k / month"></div>
+          <div class="detail-field"><label>🛒 منصة المتجر</label><input type="text" id="d-platform" placeholder="Salla / Zid / WooCommerce"></div>
         </div>
       </div>
-
-      <!-- Contact -->
       <div>
         <div class="detail-section-title">بيانات التواصل</div>
         <div class="detail-grid">
-          <div class="detail-field">
-            <label>📞 رقم تواصل على الموقع</label>
-            <input type="text" id="d-phone" placeholder="05xxxxxxxx">
-          </div>
-          <div class="detail-field">
-            <label>📧 البريد الإلكتروني</label>
-            <input type="text" id="d-email" placeholder="email@example.com">
-          </div>
+          <div class="detail-field"><label>📞 رقم تواصل على الموقع</label><input type="text" id="d-phone" placeholder="05xxxxxxxx"></div>
+          <div class="detail-field"><label>📧 البريد الإلكتروني</label><input type="text" id="d-email" placeholder="email@example.com"></div>
         </div>
       </div>
-
-      <!-- Social -->
       <div>
         <div class="detail-section-title">منصات التواصل الاجتماعي</div>
         <div class="detail-grid">
-          <div class="detail-field">
-            <label>📸 انستاجرام</label>
-            <input type="text" id="d-insta" placeholder="@username">
-          </div>
-          <div class="detail-field">
-            <label>👻 سنابشات</label>
-            <input type="text" id="d-snap" placeholder="@username">
-          </div>
-          <div class="detail-field">
-            <label>🎵 تيكتوك</label>
-            <input type="text" id="d-tiktok" placeholder="@username">
-          </div>
-          <div class="detail-field">
-            <label>𝕏 اكس (تويتر)</label>
-            <input type="text" id="d-x" placeholder="@username">
-          </div>
+          <div class="detail-field"><label>📸 انستاجرام</label><input type="text" id="d-insta" placeholder="@username"></div>
+          <div class="detail-field"><label>👻 سنابشات</label><input type="text" id="d-snap" placeholder="@username"></div>
+          <div class="detail-field"><label>🎵 تيكتوك</label><input type="text" id="d-tiktok" placeholder="@username"></div>
+          <div class="detail-field"><label>𝕏 اكس (تويتر)</label><input type="text" id="d-x" placeholder="@username"></div>
         </div>
       </div>
-
     </div>
-
-    <!-- Actions -->
     <div class="detail-actions" id="d-actions"></div>
   </div>
 </div>
@@ -532,8 +511,13 @@
     none:    'Main Pool',
     adel:    "Adel's Dashboard",
     ahmed:   "Ahmed's Dashboard",
-    youssef: "Youssef's Dashboard"
+    youssef: "Youssef's Dashboard",
+    deals:   'Deal Done',
+    off:     'Off Clients',
   };
+
+  const CARD_VIEWS  = ['none','adel','ahmed','youssef'];
+  const TABLE_VIEWS = ['deals','off'];
 
   async function setView(view) {
     currentView = view;
@@ -554,21 +538,43 @@
   }
 
   function updateStats() {
-    document.getElementById('stat-pool').textContent    = allLeads.filter(l => l.assigned_to === 'none').length;
-    document.getElementById('stat-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel'    && l.status !== 'deal_done').length;
-    document.getElementById('stat-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed'   && l.status !== 'deal_done').length;
-    document.getElementById('stat-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'deal_done').length;
+    document.getElementById('stat-pool').textContent    = allLeads.filter(l => l.assigned_to === 'none'    && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('stat-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel'    && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('stat-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed'   && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('stat-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'off' && l.status !== 'deal_done').length;
     document.getElementById('stat-deals').textContent   = allLeads.filter(l => l.status === 'deal_done').length;
+    document.getElementById('stat-off').textContent     = allLeads.filter(l => l.status === 'off').length;
 
-    document.getElementById('count-none').textContent    = allLeads.filter(l => l.assigned_to === 'none').length;
-    document.getElementById('count-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel').length;
-    document.getElementById('count-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed').length;
-    document.getElementById('count-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef').length;
+    document.getElementById('count-none').textContent    = allLeads.filter(l => l.assigned_to === 'none'    && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('count-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel'    && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('count-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed'   && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('count-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'off' && l.status !== 'deal_done').length;
+    document.getElementById('count-deals').textContent   = allLeads.filter(l => l.status === 'deal_done').length;
+    document.getElementById('count-off').textContent     = allLeads.filter(l => l.status === 'off').length;
   }
 
   function renderFiltered() {
     const q = document.getElementById('searchInput').value.toLowerCase().trim();
-    let leads = allLeads.filter(l => l.assigned_to === currentView);
+
+    if (TABLE_VIEWS.includes(currentView)) {
+      const statusFilter = currentView === 'deals' ? 'deal_done' : 'off';
+      let leads = allLeads.filter(l => l.status === statusFilter);
+      if (q) leads = leads.filter(l =>
+        (l.url||'').toLowerCase().includes(q) ||
+        (l.assigned_to||'').toLowerCase().includes(q) ||
+        (l.traffic||'').toLowerCase().includes(q) ||
+        (l.platform||'').toLowerCase().includes(q)
+      );
+      renderTable(leads);
+      return;
+    }
+
+    // Card views — hide off and deal_done
+    let leads = allLeads.filter(l =>
+      l.assigned_to === currentView &&
+      l.status !== 'off' &&
+      l.status !== 'deal_done'
+    );
     if (q) {
       leads = leads.filter(l =>
         (l.url||'').toLowerCase().includes(q) ||
@@ -580,9 +586,67 @@
         (l.social_insta||'').toLowerCase().includes(q)
       );
     }
-    render(leads);
+    renderCards(leads);
   }
 
+  // ── TABLE RENDER ─────────────────────────────────────────
+  function assignColor(a) {
+    const map = { adel:'var(--adel)', ahmed:'var(--ahmed)', youssef:'var(--youssef)' };
+    return map[a] || 'var(--muted)';
+  }
+
+  function renderTable(leads) {
+    const c = document.getElementById('leads-container');
+    const isDeals = currentView === 'deals';
+
+    if (!leads.length) {
+      c.innerHTML = `<div class="empty-state">No entries here yet.</div>`;
+      return;
+    }
+
+    c.innerHTML = `
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>URL</th>
+              <th>Traffic</th>
+              <th>Platform</th>
+              ${isDeals ? '<th>Closed By</th>' : '<th>Was Assigned</th>'}
+              <th>👻</th>
+              <th>📞</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map((l, i) => `
+              <tr onclick="openDetail(${l.id})">
+                <td class="td-muted">${i + 1}</td>
+                <td class="td-url">${escHtml(l.url)}</td>
+                <td class="td-muted">${escHtml(l.traffic || '—')}</td>
+                <td class="td-muted">${escHtml(l.platform || '—')}</td>
+                <td>
+                  ${l.assigned_to && l.assigned_to !== 'none'
+                    ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:${assignColor(l.assigned_to)}">${l.assigned_to}</span>`
+                    : `<span class="td-muted">—</span>`}
+                </td>
+                <td style="font-size:13px;text-align:center">${l.is_on_snap  ? '✓' : '<span style="color:var(--muted)">—</span>'}</td>
+                <td style="font-size:13px;text-align:center">${l.is_on_phone ? '✓' : '<span style="color:var(--muted)">—</span>'}</td>
+                <td onclick="event.stopPropagation()">
+                  <div class="td-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'})">↩ Restore</button>
+                    <button class="btn btn-danger btn-sm" onclick="openModal(${l.id})">🗑</button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  // ── CARDS RENDER ─────────────────────────────────────────
   function socialTags(l) {
     const tags = [];
     if (l.social_snap)   tags.push(`<span class="soc-tag snap">👻 ${escHtml(l.social_snap)}</span>`);
@@ -599,6 +663,19 @@
     return '';
   }
 
+  function statusPicker(l) {
+    // Always show new + off; show deal_done only if assigned to someone
+    const opts = [
+      { v: 'new',  label: '🔵 New' },
+      ...(l.assigned_to !== 'none' ? [{ v: 'deal_done', label: '✅ Deal' }] : []),
+      { v: 'off',  label: '⚫ Off' },
+    ];
+    return opts.map(o => `
+      <span class="spick ${l.status === o.v ? 'active-' + o.v : ''}"
+            onclick="setStatus(event,${l.id},'${o.v}')">${o.label}</span>
+    `).join('');
+  }
+
   function assignButtons(l) {
     if (l.assigned_to === 'none') {
       return `
@@ -608,7 +685,6 @@
       `;
     }
     return `
-      ${l.status !== 'deal_done' ? `<button class="btn btn-success btn-sm" onclick="quickUpdate(${l.id},{status:'deal_done'})">✅ Deal Done</button>` : ''}
       <button class="btn btn-ghost btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'})">↩ Release</button>
     `;
   }
@@ -627,55 +703,62 @@
     `;
   }
 
-  function render(leads) {
+  function renderCards(leads) {
     const c = document.getElementById('leads-container');
     if (!leads.length) {
-      c.innerHTML = `<div class="empty-state">No leads here yet.</div>`;
+      c.innerHTML = `<div class="grid"><div class="empty-state">No leads here yet.</div></div>`;
       return;
     }
-    c.innerHTML = leads.map((l, i) => {
-      const soc   = socialTags(l);
+    c.innerHTML = `<div class="grid">${leads.map((l, i) => {
+      const soc    = socialTags(l);
       const cstate = contactState(l);
       return `
       <div class="card" data-assign="${l.assigned_to}" ${cstate ? `data-contact="${cstate}"` : ''} style="animation-delay:${i*0.04}s"
            onclick="openDetail(${l.id})">
-
         <div class="card-header">
           <div class="card-url">${escHtml(l.url)}</div>
           <span class="badge badge-${l.status}">${l.status.replace('_',' ')}</span>
         </div>
-
         <div class="card-pills">
-          ${l.traffic       ? `<div class="pill">📊 <b>${escHtml(l.traffic)}</b></div>`       : ''}
-          ${l.platform      ? `<div class="pill">🛒 <b>${escHtml(l.platform)}</b></div>`      : ''}
-          ${l.strength      ? `<div class="pill">⚡ <b>${escHtml(l.strength)}</b></div>`      : ''}
-          ${l.contact_phone ? `<div class="pill">📞 ${escHtml(l.contact_phone)}</div>`        : ''}
+          ${l.traffic       ? `<div class="pill">📊 <b>${escHtml(l.traffic)}</b></div>`  : ''}
+          ${l.platform      ? `<div class="pill">🛒 <b>${escHtml(l.platform)}</b></div>` : ''}
+          ${l.strength      ? `<div class="pill">⚡ <b>${escHtml(l.strength)}</b></div>` : ''}
+          ${l.contact_phone ? `<div class="pill">📞 ${escHtml(l.contact_phone)}</div>`   : ''}
         </div>
-
         ${soc ? `<div class="card-socials">${soc}</div>` : ''}
-
+        <div class="status-picker" onclick="event.stopPropagation()">
+          ${statusPicker(l)}
+        </div>
         <div class="contact-toggles" onclick="event.stopPropagation()">
           <label class="ctoggle ${l.is_on_snap  ? 'snap-active'  : ''}" onclick="toggleContact(event,${l.id},'is_on_snap')">
-            <input type="checkbox" ${l.is_on_snap  ? 'checked' : ''}>
-            👻 Snap
+            <input type="checkbox" ${l.is_on_snap  ? 'checked' : ''}>👻 Snap
           </label>
           <label class="ctoggle ${l.is_on_phone ? 'phone-active' : ''}" onclick="toggleContact(event,${l.id},'is_on_phone')">
-            <input type="checkbox" ${l.is_on_phone ? 'checked' : ''}>
-            📞 Phone
+            <input type="checkbox" ${l.is_on_phone ? 'checked' : ''}>📞 Phone
           </label>
         </div>
-
         <div class="hint-text">🖱 Click to view & edit all details</div>
-
         <div class="card-controls" onclick="event.stopPropagation()">
           ${assignButtons(l)}
           <button class="btn btn-danger btn-sm" onclick="openModal(${l.id})">🗑</button>
         </div>
       </div>`;
-    }).join('');
+    }).join('')}</div>`;
   }
 
-  // ── Contact Toggle (instant save, no modal) ───────────────
+  // ── Status picker ─────────────────────────────────────────
+  async function setStatus(e, id, status) {
+    e.stopPropagation();
+    const { error } = await db.from('leads').update({ status }).eq('id', id);
+    if (error) { toast('Update failed ✗'); return; }
+    const lead = allLeads.find(x => x.id === id);
+    if (lead) lead.status = status;
+    updateStats();
+    renderFiltered();
+    toast('Status updated ✓');
+  }
+
+  // ── Contact toggle ────────────────────────────────────────
   async function toggleContact(e, id, field) {
     e.stopPropagation();
     const lead = allLeads.find(x => x.id === id);
@@ -710,7 +793,6 @@
       ${detailAssignButtons(l)}
       <button class="btn btn-danger" onclick="closeDetail();openModal(${l.id})">🗑 Delete</button>
     `;
-
     document.getElementById('detail-bg').classList.add('show');
   }
 
@@ -799,8 +881,7 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  document.getElementById('addForm').style.display = 'flex';
-  fetchLeads();
+  setView('none');
 </script>
 </body>
 </html>
