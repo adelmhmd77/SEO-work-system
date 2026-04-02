@@ -150,15 +150,41 @@
       border-radius: 12px; padding: 18px;
       display: flex; flex-direction: column; gap: 12px;
       cursor: pointer;
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s, background 0.2s;
       animation: fadeUp 0.25s ease both;
     }
     @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     .card:hover { border-color: #2a3050; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+    /* Left border — assigned color (default) */
     .card[data-assign="adel"]    { border-left: 3px solid var(--adel); }
     .card[data-assign="ahmed"]   { border-left: 3px solid var(--ahmed); }
     .card[data-assign="youssef"] { border-left: 3px solid var(--youssef); }
     .card[data-assign="none"]    { border-left: 3px solid var(--pool); }
+
+    /* Contact state overrides — these win over assign color */
+    .card[data-contact="snap"] {
+      border-left: 3px solid #FFFC00 !important;
+      background: rgba(255, 252, 0, 0.03) !important;
+    }
+    .card[data-contact="phone"] {
+      border-left: 3px solid #10b981 !important;
+      background: rgba(16, 185, 129, 0.03) !important;
+    }
+    /* Both: split border top=green, bottom=yellow using a pseudo-element overlay */
+    .card[data-contact="both"] {
+      border-left: 3px solid transparent !important;
+      background: linear-gradient(to bottom, rgba(16,185,129,0.05) 50%, rgba(255,252,0,0.04) 50%) !important;
+      position: relative;
+    }
+    .card[data-contact="both"]::before {
+      content: '';
+      position: absolute;
+      left: -3px; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 12px 0 0 12px;
+      background: linear-gradient(to bottom, #10b981 50%, #FFFC00 50%);
+    }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
     .card-url { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; word-break: break-all; }
@@ -190,6 +216,31 @@
     .soc-tag.insta  { background: rgba(225,48,108,0.12);   color: #e1306c; }
     .soc-tag.tiktok { background: rgba(105,201,208,0.12);  color: #69c9d0; }
     .soc-tag.x      { background: rgba(255,255,255,0.06);  color: #aaa; }
+
+    /* CONTACT TOGGLES on card */
+    .contact-toggles {
+      display: flex; gap: 7px; flex-wrap: wrap;
+    }
+    .ctoggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      color: var(--muted); cursor: pointer; user-select: none;
+      padding: 5px 10px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--surface2);
+      transition: all 0.18s;
+    }
+    .ctoggle input { display: none; }
+    .ctoggle:hover { border-color: var(--muted); color: var(--text); }
+    .ctoggle.snap-active  {
+      background: rgba(255,252,0,0.1);
+      border-color: rgba(255,252,0,0.45);
+      color: #FFFC00;
+    }
+    .ctoggle.phone-active {
+      background: rgba(16,185,129,0.1);
+      border-color: rgba(16,185,129,0.45);
+      color: #10b981;
+    }
 
     .card-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
 
@@ -265,25 +316,6 @@
     .detail-field input:focus { border-color: var(--pool); }
     .detail-field input::placeholder { color: var(--muted); }
 
-    /* snap toggle */
-    .snap-toggle {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-size: 13px; color: var(--muted); cursor: pointer; user-select: none;
-    }
-    .snap-toggle input[type=checkbox] { display: none; }
-    .snap-box {
-      width: 36px; height: 20px; background: var(--surface2);
-      border: 1px solid var(--border); border-radius: 20px;
-      position: relative; transition: background 0.2s; flex-shrink: 0;
-    }
-    .snap-box::after {
-      content: ''; position: absolute; left: 3px; top: 3px;
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--muted); transition: all 0.2s;
-    }
-    .snap-toggle input:checked + .snap-box { background: #FFFC00; border-color: #FFFC00; }
-    .snap-toggle input:checked + .snap-box::after { left: 19px; background: #000; }
-
     .detail-actions {
       display: flex; gap: 8px; flex-wrap: wrap;
       padding: 0 24px 24px; border-top: 1px solid var(--border); padding-top: 18px;
@@ -343,7 +375,7 @@
       <span class="dot dot-youssef"></span> Youssef
       <span class="count-badge" id="count-youssef">0</span>
     </button>
-    <div class="sidebar-footer">Lead Command Center<br>v2.1 · Supabase</div>
+    <div class="sidebar-footer">Lead Command Center<br>v2.2 · Supabase</div>
   </aside>
 
   <!-- MAIN -->
@@ -463,16 +495,6 @@
         </div>
       </div>
 
-      <!-- Snap contacted toggle -->
-      <div>
-        <div class="detail-section-title">الحالة</div>
-        <label class="snap-toggle">
-          <input type="checkbox" id="d-is_on_snap">
-          <span class="snap-box"></span>
-          تم التواصل عبر سنابشات 👻
-        </label>
-      </div>
-
     </div>
 
     <!-- Actions -->
@@ -495,10 +517,8 @@
 <div id="toast"></div>
 
 <script>
-  // ─── CONFIG ── Replace these ──────────────────────────────
   const SUPABASE_URL = 'https://wqnnkghoaymrmumeyylc.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_Y_mJSINmekLqc_8-HVyPAA_KkEKq1K8';
-  // ──────────────────────────────────────────────────────────
 
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -572,6 +592,13 @@
     return tags.join('');
   }
 
+  function contactState(l) {
+    if (l.is_on_snap && l.is_on_phone) return 'both';
+    if (l.is_on_snap)  return 'snap';
+    if (l.is_on_phone) return 'phone';
+    return '';
+  }
+
   function assignButtons(l) {
     if (l.assigned_to === 'none') {
       return `
@@ -607,9 +634,10 @@
       return;
     }
     c.innerHTML = leads.map((l, i) => {
-      const soc = socialTags(l);
+      const soc   = socialTags(l);
+      const cstate = contactState(l);
       return `
-      <div class="card" data-assign="${l.assigned_to}" style="animation-delay:${i*0.04}s"
+      <div class="card" data-assign="${l.assigned_to}" ${cstate ? `data-contact="${cstate}"` : ''} style="animation-delay:${i*0.04}s"
            onclick="openDetail(${l.id})">
 
         <div class="card-header">
@@ -618,13 +646,24 @@
         </div>
 
         <div class="card-pills">
-          ${l.traffic   ? `<div class="pill">📊 <b>${escHtml(l.traffic)}</b></div>` : ''}
-          ${l.platform  ? `<div class="pill">🛒 <b>${escHtml(l.platform)}</b></div>` : ''}
-          ${l.strength  ? `<div class="pill">⚡ <b>${escHtml(l.strength)}</b></div>` : ''}
-          ${l.contact_phone ? `<div class="pill">📞 ${escHtml(l.contact_phone)}</div>` : ''}
+          ${l.traffic       ? `<div class="pill">📊 <b>${escHtml(l.traffic)}</b></div>`       : ''}
+          ${l.platform      ? `<div class="pill">🛒 <b>${escHtml(l.platform)}</b></div>`      : ''}
+          ${l.strength      ? `<div class="pill">⚡ <b>${escHtml(l.strength)}</b></div>`      : ''}
+          ${l.contact_phone ? `<div class="pill">📞 ${escHtml(l.contact_phone)}</div>`        : ''}
         </div>
 
         ${soc ? `<div class="card-socials">${soc}</div>` : ''}
+
+        <div class="contact-toggles" onclick="event.stopPropagation()">
+          <label class="ctoggle ${l.is_on_snap  ? 'snap-active'  : ''}" onclick="toggleContact(event,${l.id},'is_on_snap')">
+            <input type="checkbox" ${l.is_on_snap  ? 'checked' : ''}>
+            👻 Snap
+          </label>
+          <label class="ctoggle ${l.is_on_phone ? 'phone-active' : ''}" onclick="toggleContact(event,${l.id},'is_on_phone')">
+            <input type="checkbox" ${l.is_on_phone ? 'checked' : ''}>
+            📞 Phone
+          </label>
+        </div>
 
         <div class="hint-text">🖱 Click to view & edit all details</div>
 
@@ -636,24 +675,35 @@
     }).join('');
   }
 
+  // ── Contact Toggle (instant save, no modal) ───────────────
+  async function toggleContact(e, id, field) {
+    e.stopPropagation();
+    const lead = allLeads.find(x => x.id === id);
+    if (!lead) return;
+    const newVal = !lead[field];
+    const { error } = await db.from('leads').update({ [field]: newVal }).eq('id', id);
+    if (error) { toast('Update failed ✗'); return; }
+    lead[field] = newVal;
+    renderFiltered();
+  }
+
   // ── Detail Popup ──────────────────────────────────────────
   function openDetail(id) {
     const l = allLeads.find(x => x.id === id);
     if (!l) return;
     currentDetailId = id;
 
-    document.getElementById('d-url').textContent    = l.url;
-    document.getElementById('d-badge').innerHTML    = `<span class="badge badge-${l.status}">${l.status.replace('_',' ')}</span>`;
-    document.getElementById('d-strength').value     = l.strength       || '';
-    document.getElementById('d-traffic').value      = l.traffic        || '';
-    document.getElementById('d-platform').value     = l.platform       || '';
-    document.getElementById('d-phone').value        = l.contact_phone  || '';
-    document.getElementById('d-email').value        = l.contact_email  || '';
-    document.getElementById('d-insta').value        = l.social_insta   || '';
-    document.getElementById('d-snap').value         = l.social_snap    || '';
-    document.getElementById('d-tiktok').value       = l.social_tiktok  || '';
-    document.getElementById('d-x').value            = l.social_x       || '';
-    document.getElementById('d-is_on_snap').checked = !!l.is_on_snap;
+    document.getElementById('d-url').textContent = l.url;
+    document.getElementById('d-badge').innerHTML = `<span class="badge badge-${l.status}">${l.status.replace('_',' ')}</span>`;
+    document.getElementById('d-strength').value  = l.strength      || '';
+    document.getElementById('d-traffic').value   = l.traffic       || '';
+    document.getElementById('d-platform').value  = l.platform      || '';
+    document.getElementById('d-phone').value     = l.contact_phone || '';
+    document.getElementById('d-email').value     = l.contact_email || '';
+    document.getElementById('d-insta').value     = l.social_insta  || '';
+    document.getElementById('d-snap').value      = l.social_snap   || '';
+    document.getElementById('d-tiktok').value    = l.social_tiktok || '';
+    document.getElementById('d-x').value         = l.social_x      || '';
 
     document.getElementById('d-actions').innerHTML = `
       <button class="btn btn-pool" onclick="saveDetail()">💾 Save Changes</button>
@@ -681,7 +731,6 @@
       social_snap:   document.getElementById('d-snap').value.trim(),
       social_tiktok: document.getElementById('d-tiktok').value.trim(),
       social_x:      document.getElementById('d-x').value.trim(),
-      is_on_snap:    document.getElementById('d-is_on_snap').checked,
     };
     const { error } = await db.from('leads').update(updates).eq('id', currentDetailId);
     if (error) { toast('Save failed ✗'); return; }
