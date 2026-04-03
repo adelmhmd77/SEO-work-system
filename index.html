@@ -1,610 +1,1279 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lead Command Center</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <style>
     :root {
-      --bg:          #0a0c10;
-      --surface:     #111318;
-      --surface2:    #181c24;
-      --border:      #1f2535;
-      --text:        #e2e8f8;
-      --muted:       #5a6380;
-      --adel:        #f59e0b;
-      --ahmed:       #7c3aed;
-      --youssef:     #10b981;
-      --pool:        #0ea5e9;
-      --danger:      #ef4444;
-      --success:     #10b981;
-      --off:         #64748b;
-      --adel-dim:    rgba(245,158,11,0.12);
-      --ahmed-dim:   rgba(124,58,237,0.12);
-      --youssef-dim: rgba(16,185,129,0.12);
-      --pool-dim:    rgba(14,165,233,0.12);
+      --bg: #0a0c10;
+      --surface: #111318;
+      --surface2: #181c24;
+      --border: #1f2535;
+      --text: #e2e8f8;
+      --muted: #5a6380;
+      --adel: #f59e0b;
+      --ahmed: #7c3aed;
+      --youssef: #10b981;
+      --pool: #0ea5e9;
+      --danger: #ef4444;
+      --success: #10b981;
+      --off: #64748b;
+      --adel-dim: rgba(245, 158, 11, 0.12);
+      --ahmed-dim: rgba(124, 58, 237, 0.12);
+      --youssef-dim: rgba(16, 185, 129, 0.12);
+      --pool-dim: rgba(14, 165, 233, 0.12);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .layout { display: flex; min-height: 100vh; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
 
     /* SIDEBAR */
     .sidebar {
-      width: 220px; flex-shrink: 0;
-      background: var(--surface); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      padding: 28px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
+
     .logo {
-      font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
-      color: var(--text); margin-bottom: 36px; display: flex; align-items: center; gap: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 36px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+
     .logo span {
-      width: 28px; height: 28px;
+      width: 28px;
+      height: 28px;
       background: linear-gradient(135deg, var(--pool), var(--ahmed));
-      border-radius: 7px; display: inline-block;
+      border-radius: 7px;
+      display: inline-block;
     }
+
     .nav-label {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      text-transform: uppercase; letter-spacing: 1.5px;
-      color: var(--muted); margin-bottom: 8px; padding-left: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding-left: 10px;
     }
-    .nav-divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+    .nav-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 14px 0;
+    }
+
     .nav-btn {
-      width: 100%; display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 8px; border: none;
-      background: transparent; color: var(--muted);
-      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-      cursor: pointer; transition: all 0.15s; margin-bottom: 2px; text-align: left;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+      text-align: left;
     }
-    .nav-btn:hover { background: var(--surface2); color: var(--text); }
-    .nav-btn.active { background: var(--surface2); color: var(--text); }
-    .nav-btn .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .dot-pool    { background: var(--pool); }
-    .dot-adel    { background: var(--adel); }
-    .dot-ahmed   { background: var(--ahmed); }
-    .dot-youssef { background: var(--youssef); }
-    .dot-off     { background: var(--off); }
-    .dot-deals   { background: var(--success); }
+
+    .nav-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-btn.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-btn .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-pool {
+      background: var(--pool);
+    }
+
+    .dot-adel {
+      background: var(--adel);
+    }
+
+    .dot-ahmed {
+      background: var(--ahmed);
+    }
+
+    .dot-youssef {
+      background: var(--youssef);
+    }
+
+    .dot-off {
+      background: var(--off);
+    }
+
+    .dot-deals {
+      background: var(--success);
+    }
+
     .count-badge {
-      margin-left: auto; font-family: 'DM Mono', monospace; font-size: 11px;
-      background: var(--border); color: var(--muted); padding: 1px 7px; border-radius: 20px;
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      background: var(--border);
+      color: var(--muted);
+      padding: 1px 7px;
+      border-radius: 20px;
     }
+
     .sidebar-footer {
-      margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);
-      font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); line-height: 1.7;
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.7;
     }
 
     /* MAIN */
-    .main { flex: 1; padding: 32px; overflow-x: hidden; }
+    .main {
+      flex: 1;
+      padding: 32px;
+      overflow-x: hidden;
+    }
+
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+      flex-wrap: wrap;
     }
-    .page-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
-    .search-wrap { position: relative; flex: 1; max-width: 340px; }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 340px;
+    }
+
     .search-wrap svg {
-      position: absolute; left: 12px; top: 50%;
-      transform: translateY(-50%); color: var(--muted); pointer-events: none;
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
     }
+
     #searchInput {
-      width: 100%; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      padding: 9px 12px 9px 36px; outline: none; transition: border 0.15s;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 9px 12px 9px 36px;
+      outline: none;
+      transition: border 0.15s;
     }
-    #searchInput:focus { border-color: var(--pool); }
-    #searchInput::placeholder { color: var(--muted); }
+
+    #searchInput:focus {
+      border-color: var(--pool);
+    }
+
+    #searchInput::placeholder {
+      color: var(--muted);
+    }
 
     /* ADD FORM */
     .add-form {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 20px;
-      display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
     }
+
     .add-form input {
-      flex: 1; min-width: 130px; background: var(--surface2);
-      border: 1px solid var(--border); border-radius: 7px; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      padding: 9px 12px; outline: none; transition: border 0.15s;
+      flex: 1;
+      min-width: 130px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border 0.15s;
     }
-    .add-form input:focus { border-color: var(--pool); }
-    .add-form input::placeholder { color: var(--muted); }
+
+    .add-form input:focus {
+      border-color: var(--pool);
+    }
+
+    .add-form input::placeholder {
+      color: var(--muted);
+    }
 
     /* BUTTONS */
     .btn {
-      padding: 9px 18px; border-radius: 7px; border: none;
-      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-      cursor: pointer; transition: opacity 0.15s, transform 0.1s; white-space: nowrap;
+      padding: 9px 18px;
+      border-radius: 7px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      white-space: nowrap;
     }
-    .btn:hover { opacity: 0.85; }
-    .btn:active { transform: scale(0.97); }
-    .btn-pool    { background: var(--pool);    color: #fff; }
-    .btn-adel    { background: var(--adel);    color: #0a0c10; }
-    .btn-ahmed   { background: var(--ahmed);   color: #fff; }
-    .btn-youssef { background: var(--youssef); color: #fff; }
-    .btn-danger  { background: var(--danger);  color: #fff; }
-    .btn-ghost   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-    .btn-success { background: var(--success); color: #fff; }
-    .btn-off     { background: var(--off);     color: #fff; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-pool {
+      background: var(--pool);
+      color: #fff;
+    }
+
+    .btn-adel {
+      background: var(--adel);
+      color: #0a0c10;
+    }
+
+    .btn-ahmed {
+      background: var(--ahmed);
+      color: #fff;
+    }
+
+    .btn-youssef {
+      background: var(--youssef);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-off {
+      background: var(--off);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
 
     /* STATS */
-    .stats-row { display: flex; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stats-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
     .stat-card {
-      flex: 1; min-width: 100px; background: var(--surface);
-      border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px;
+      flex: 1;
+      min-width: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
     }
+
     .stat-label {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 4px;
     }
-    .stat-value { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+    }
 
     /* GRID */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
 
     /* CARD */
     .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 18px;
-      display: flex; flex-direction: column; gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       cursor: pointer;
       transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s, background 0.2s;
       animation: fadeUp 0.25s ease both;
     }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-    .card:hover { border-color: #2a3050; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-    .card[data-assign="adel"]    { border-left: 3px solid var(--adel); }
-    .card[data-assign="ahmed"]   { border-left: 3px solid var(--ahmed); }
-    .card[data-assign="youssef"] { border-left: 3px solid var(--youssef); }
-    .card[data-assign="none"]    { border-left: 3px solid var(--pool); }
-    .card[data-contact="snap"]  { border-left: 3px solid #FFFC00 !important; background: rgba(255,252,0,0.03) !important; }
-    .card[data-contact="phone"] { border-left: 3px solid #10b981 !important; background: rgba(16,185,129,0.03) !important; }
-    .card[data-contact="both"]  {
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      border-color: #2a3050;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card[data-assign="adel"] {
+      border-left: 3px solid var(--adel);
+    }
+
+    .card[data-assign="ahmed"] {
+      border-left: 3px solid var(--ahmed);
+    }
+
+    .card[data-assign="youssef"] {
+      border-left: 3px solid var(--youssef);
+    }
+
+    .card[data-assign="none"] {
+      border-left: 3px solid var(--pool);
+    }
+
+    .card[data-contact="snap"] {
+      border-left: 3px solid #FFFC00 !important;
+      background: rgba(255, 252, 0, 0.03) !important;
+    }
+
+    .card[data-contact="phone"] {
+      border-left: 3px solid #10b981 !important;
+      background: rgba(16, 185, 129, 0.03) !important;
+    }
+
+    .card[data-contact="both"] {
       border-left: 3px solid transparent !important;
-      background: linear-gradient(to bottom, rgba(16,185,129,0.05) 50%, rgba(255,252,0,0.04) 50%) !important;
+      background: linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 50%, rgba(255, 252, 0, 0.04) 50%) !important;
       position: relative;
     }
+
     .card[data-contact="both"]::before {
-      content: ''; position: absolute; left: -3px; top: 0; bottom: 0; width: 3px;
+      content: '';
+      position: absolute;
+      left: -3px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
       border-radius: 12px 0 0 12px;
       background: linear-gradient(to bottom, #10b981 50%, #FFFC00 50%);
     }
 
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-    .card-url { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; word-break: break-all; }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-url {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      word-break: break-all;
+    }
 
     .badge {
-      flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 9px;
-      text-transform: uppercase; letter-spacing: 1px; padding: 3px 8px; border-radius: 20px; font-weight: 500;
+      flex-shrink: 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 500;
     }
-    .badge-new       { background: var(--pool-dim);        color: var(--pool); }
-    .badge-working   { background: var(--adel-dim);        color: var(--adel); }
-    .badge-deal_done { background: rgba(16,185,129,0.15);  color: var(--success); }
-    .badge-rejected  { background: rgba(239,68,68,0.12);   color: var(--danger); }
-    .badge-off       { background: rgba(100,116,139,0.15); color: var(--off); }
 
-    .card-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+    .badge-new {
+      background: var(--pool-dim);
+      color: var(--pool);
+    }
+
+    .badge-working {
+      background: var(--adel-dim);
+      color: var(--adel);
+    }
+
+    .badge-deal_done {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .badge-rejected {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger);
+    }
+
+    .badge-off {
+      background: rgba(100, 116, 139, 0.15);
+      color: var(--off);
+    }
+
+    .card-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
     .pill {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 5px; padding: 3px 8px; color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 3px 8px;
+      color: var(--muted);
     }
-    .pill b { color: var(--text); }
 
-    .card-socials { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill b {
+      color: var(--text);
+    }
+
+    .card-socials {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
     .soc-tag {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 10px; padding: 3px 8px; border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 20px;
       font-family: 'DM Mono', monospace;
     }
-    .soc-tag.snap   { background: rgba(255,252,0,0.12);   color: #FFFC00; }
-    .soc-tag.insta  { background: rgba(225,48,108,0.12);  color: #e1306c; }
-    .soc-tag.tiktok { background: rgba(105,201,208,0.12); color: #69c9d0; }
-    .soc-tag.x      { background: rgba(255,255,255,0.06); color: #aaa; }
+
+    .soc-tag.snap {
+      background: rgba(255, 252, 0, 0.12);
+      color: #FFFC00;
+    }
+
+    .soc-tag.insta {
+      background: rgba(225, 48, 108, 0.12);
+      color: #e1306c;
+    }
+
+    .soc-tag.tiktok {
+      background: rgba(105, 201, 208, 0.12);
+      color: #69c9d0;
+    }
+
+    .soc-tag.x {
+      background: rgba(255, 255, 255, 0.06);
+      color: #aaa;
+    }
 
     /* STATUS PICKER */
-    .status-picker { display: flex; gap: 5px; flex-wrap: wrap; }
-    .spick {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
-      background: var(--surface2); color: var(--muted);
-      cursor: pointer; transition: all 0.15s; user-select: none;
+    .status-picker {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
     }
-    .spick:hover { border-color: var(--muted); color: var(--text); }
-    .spick.active-new       { background: var(--pool-dim);        border-color: var(--pool);    color: var(--pool); }
-    .spick.active-working   { background: var(--adel-dim);        border-color: var(--adel);    color: var(--adel); }
-    .spick.active-deal_done { background: rgba(16,185,129,0.15);  border-color: var(--success); color: var(--success); }
-    .spick.active-off       { background: rgba(100,116,139,0.15); border-color: var(--off);     color: var(--off); }
+
+    .spick {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .spick:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    .spick.active-new {
+      background: var(--pool-dim);
+      border-color: var(--pool);
+      color: var(--pool);
+    }
+
+    .spick.active-working {
+      background: var(--adel-dim);
+      border-color: var(--adel);
+      color: var(--adel);
+    }
+
+    .spick.active-deal_done {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .spick.active-off {
+      background: rgba(100, 116, 139, 0.15);
+      border-color: var(--off);
+      color: var(--off);
+    }
 
     /* CONTACT TOGGLES */
-    .contact-toggles { display: flex; gap: 7px; flex-wrap: wrap; }
+    .contact-toggles {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
     .ctoggle {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      color: var(--muted); cursor: pointer; user-select: none;
-      padding: 5px 10px; border-radius: 20px;
-      border: 1px solid var(--border); background: var(--surface2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
       transition: all 0.18s;
     }
-    .ctoggle input { display: none; }
-    .ctoggle:hover { border-color: var(--muted); color: var(--text); }
-    .ctoggle.snap-active  { background: rgba(255,252,0,0.1);  border-color: rgba(255,252,0,0.45);  color: #FFFC00; }
-    .ctoggle.phone-active { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.45); color: #10b981; }
 
-    .card-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
-    .hint-text { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-align: center; }
+    .ctoggle input {
+      display: none;
+    }
+
+    .ctoggle:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    .ctoggle.snap-active {
+      background: rgba(255, 252, 0, 0.1);
+      border-color: rgba(255, 252, 0, 0.45);
+      color: #FFFC00;
+    }
+
+    .ctoggle.phone-active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #10b981;
+    }
+
+    .card-controls {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .hint-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+    }
 
     .empty-state {
-      text-align: center; padding: 60px 20px;
-      color: var(--muted); font-family: 'DM Mono', monospace; font-size: 13px; line-height: 2;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
     }
-    .grid .empty-state { grid-column: 1/-1; }
+
+    .grid .empty-state {
+      grid-column: 1/-1;
+    }
 
     .spinner {
-      width: 24px; height: 24px; border: 2px solid var(--border);
-      border-top-color: var(--pool); border-radius: 50%;
-      animation: spin 0.7s linear infinite; margin: 60px auto;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--pool);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 60px auto;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* TABLE VIEW */
     .table-wrap {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
     }
-    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .tbl thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .tbl thead tr {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
     .tbl th {
-      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--muted); padding: 12px 16px; text-align: left; white-space: nowrap;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 12px 16px;
+      text-align: left;
+      white-space: nowrap;
     }
-    .tbl td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
-    .tbl tbody tr:last-child td { border-bottom: none; }
-    .tbl tbody tr { transition: background 0.12s; cursor: pointer; }
-    .tbl tbody tr:hover { background: var(--surface2); }
-    .tbl .td-url { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; }
-    .tbl .td-muted { color: var(--muted); font-size: 12px; }
-    .tbl .td-actions { display: flex; gap: 6px; align-items: center; }
+
+    .tbl td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .tbl tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tbody tr {
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+
+    .tbl tbody tr:hover {
+      background: var(--surface2);
+    }
+
+    .tbl .td-url {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tbl .td-muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tbl .td-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
 
     /* DETAIL POPUP */
     #detail-bg {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.78); z-index: 200;
-      align-items: center; justify-content: center; padding: 20px;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    #detail-bg.show { display: flex; }
+
+    #detail-bg.show {
+      display: flex;
+    }
+
     #detail-panel {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; width: 100%; max-width: 580px;
-      max-height: 90vh; overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
       animation: slideUp 0.22s ease;
     }
-    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .detail-header {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      padding: 24px 24px 18px; gap: 12px; border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 24px 24px 18px;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
     }
-    .detail-url { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; word-break: break-all; }
+
+    .detail-url {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      word-break: break-all;
+    }
+
     .detail-close {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--muted); border-radius: 7px; padding: 6px 10px;
-      cursor: pointer; font-size: 16px; flex-shrink: 0; line-height: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 7px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      flex-shrink: 0;
+      line-height: 1;
     }
-    .detail-close:hover { color: var(--text); }
-    .detail-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 22px; }
+
+    .detail-close:hover {
+      color: var(--text);
+    }
+
+    .detail-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
     .detail-section-title {
-      font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
-      letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .detail-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .detail-field { display: flex; flex-direction: column; gap: 5px; }
+
+    .detail-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
     .detail-field label {
-      font-family: 'DM Mono', monospace; font-size: 10px;
-      text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
     }
+
     .detail-field input {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 7px; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      padding: 9px 11px; outline: none; transition: border 0.15s; width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 9px 11px;
+      outline: none;
+      transition: border 0.15s;
+      width: 100%;
     }
-    .detail-field input:focus { border-color: var(--pool); }
-    .detail-field input::placeholder { color: var(--muted); }
+
+    .detail-field input:focus {
+      border-color: var(--pool);
+    }
+
+    .detail-field input::placeholder {
+      color: var(--muted);
+    }
+
     .detail-actions {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      padding: 18px 24px 24px; border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 18px 24px 24px;
+      border-top: 1px solid var(--border);
     }
 
     /* DELETE MODAL */
     #modal-bg {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7); z-index: 300; align-items: center; justify-content: center;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
     }
-    #modal-bg.show { display: flex; }
+
+    #modal-bg.show {
+      display: flex;
+    }
+
     #modal {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 28px 32px; max-width: 340px; width: 90%; text-align: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
     }
-    #modal h2 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 10px; }
-    #modal p  { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
-    .modal-btns { display: flex; gap: 10px; justify-content: center; }
+
+    #modal h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    #modal p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
 
     /* TOAST */
     #toast {
-      position: fixed; bottom: 28px; right: 28px;
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px;
-      padding: 10px 18px; border-radius: 8px;
-      transform: translateY(60px); opacity: 0; transition: all 0.25s; z-index: 999;
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      transform: translateY(60px);
+      opacity: 0;
+      transition: all 0.25s;
+      z-index: 999;
     }
-    #toast.show { transform: translateY(0); opacity: 1; }
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
   </style>
 </head>
+
 <body>
 
-<div class="layout">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo"><span></span> Lead CMD</div>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="logo"><span></span> Lead CMD</div>
 
-    <div class="nav-label">Active</div>
-    <button class="nav-btn active" id="btn-none" onclick="setView('none')">
-      <span class="dot dot-pool"></span> Main Pool
-      <span class="count-badge" id="count-none">0</span>
-    </button>
-    <button class="nav-btn" id="btn-adel" onclick="setView('adel')">
-      <span class="dot dot-adel"></span> Adel
-      <span class="count-badge" id="count-adel">0</span>
-    </button>
-    <button class="nav-btn" id="btn-ahmed" onclick="setView('ahmed')">
-      <span class="dot dot-ahmed"></span> Ahmed
-      <span class="count-badge" id="count-ahmed">0</span>
-    </button>
-    <button class="nav-btn" id="btn-youssef" onclick="setView('youssef')">
-      <span class="dot dot-youssef"></span> Youssef
-      <span class="count-badge" id="count-youssef">0</span>
-    </button>
+      <div class="nav-label">Active</div>
+      <button class="nav-btn active" id="btn-none" onclick="setView('none')">
+        <span class="dot dot-pool"></span> Main Pool
+        <span class="count-badge" id="count-none">0</span>
+      </button>
+      <button class="nav-btn" id="btn-adel" onclick="setView('adel')">
+        <span class="dot dot-adel"></span> Adel
+        <span class="count-badge" id="count-adel">0</span>
+      </button>
+      <button class="nav-btn" id="btn-ahmed" onclick="setView('ahmed')">
+        <span class="dot dot-ahmed"></span> Ahmed
+        <span class="count-badge" id="count-ahmed">0</span>
+      </button>
+      <button class="nav-btn" id="btn-youssef" onclick="setView('youssef')">
+        <span class="dot dot-youssef"></span> Youssef
+        <span class="count-badge" id="count-youssef">0</span>
+      </button>
+      <div class="nav-divider"></div>
 
-    <div class="nav-divider"></div>
-    <div class="nav-label">Archive</div>
-    <button class="nav-btn" id="btn-deals" onclick="setView('deals')">
-      <span class="dot dot-deals"></span> Deal Done
-      <span class="count-badge" id="count-deals">0</span>
-    </button>
-    <button class="nav-btn" id="btn-off" onclick="setView('off')">
-      <span class="dot dot-off"></span> Off
-      <span class="count-badge" id="count-off">0</span>
-    </button>
+      <div class="nav-label">Archive</div>
+      <button class="nav-btn" id="btn-deals" onclick="setView('deals')">
+        <span class="dot dot-deals"></span> Deal Done
+        <span class="count-badge" id="count-deals">0</span>
+      </button>
+      <button class="nav-btn" id="btn-off" onclick="setView('off')">
+        <span class="dot dot-off"></span> Off
+        <span class="count-badge" id="count-off">0</span>
+      </button>
 
-    <div class="sidebar-footer">Lead Command Center<br>v2.3 · Supabase</div>
-  </aside>
+      <div class="nav-divider"></div>
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="top-bar">
-      <div class="page-title" id="pageTitle">Main Pool</div>
-      <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="Search URL, traffic, platform…" oninput="renderFiltered()">
-      </div>
-    </div>
 
-    <!-- ADD FORM -->
-    <div class="add-form" id="addForm" style="display:none">
-      <input type="text" id="newUrl"      placeholder="رابط الموقع">
-      <input type="text" id="newTraffic"  placeholder="الترافيك (50k)">
-      <input type="text" id="newPlatform" placeholder="المنصة (Salla / Zid)">
-      <button class="btn btn-pool" onclick="addNewLead()">+ Add Lead</button>
-    </div>
+      <div class="nav-label">Navigation</div>
+      <a href="index.html" class="nav-btn">
+        <span class="dot dot-pool"></span> Leads
+      </a>
+      <a href="payments.html" class="nav-btn active">
+        <span class="dot dot-pay"></span> Payments
+      </a>
 
-    <!-- STATS -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">Total Pool</div>
-        <div class="stat-value" id="stat-pool" style="color:var(--pool)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Adel</div>
-        <div class="stat-value" id="stat-adel" style="color:var(--adel)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Ahmed</div>
-        <div class="stat-value" id="stat-ahmed" style="color:var(--ahmed)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Youssef</div>
-        <div class="stat-value" id="stat-youssef" style="color:var(--youssef)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Deals Done</div>
-        <div class="stat-value" id="stat-deals" style="color:var(--success)">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Off</div>
-        <div class="stat-value" id="stat-off" style="color:var(--off)">0</div>
-      </div>
-    </div>
+      <div class="nav-divider"></div>
+      <div class="nav-label">Manage</div>
+      <a href="users.html" class="nav-btn">
+        <span class="dot dot-off"></span> Users
+      </a>
+      <div class="sidebar-footer">Lead Command Center<br>v2.3 · Supabase</div>
 
-    <!-- CONTENT -->
-    <div id="leads-container"><div class="spinner"></div></div>
-  </main>
-</div>
+    </aside>
 
-<!-- DETAIL POPUP -->
-<div id="detail-bg">
-  <div id="detail-panel">
-    <div class="detail-header">
-      <div>
-        <div class="detail-url" id="d-url"></div>
-        <div style="margin-top:8px" id="d-badge"></div>
-      </div>
-      <button class="detail-close" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="detail-body">
-      <div>
-        <div class="detail-section-title">معلومات الموقع</div>
-        <div class="detail-grid">
-          <div class="detail-field"><label>⚡ قوة الموقع</label><input type="text" id="d-strength" placeholder="e.g. High / 85"></div>
-          <div class="detail-field"><label>📊 الترافيك التقريبي</label><input type="text" id="d-traffic" placeholder="e.g. 50k / month"></div>
-          <div class="detail-field"><label>🛒 منصة المتجر</label><input type="text" id="d-platform" placeholder="Salla / Zid / WooCommerce"></div>
+    <!-- MAIN -->
+    <main class="main">
+      <div class="top-bar">
+        <div class="page-title" id="pageTitle">Main Pool</div>
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search URL, traffic, platform…" oninput="renderFiltered()">
         </div>
       </div>
-      <div>
-        <div class="detail-section-title">بيانات التواصل</div>
-        <div class="detail-grid">
-          <div class="detail-field"><label>📞 رقم تواصل على الموقع</label><input type="text" id="d-phone" placeholder="05xxxxxxxx"></div>
-          <div class="detail-field"><label>📧 البريد الإلكتروني</label><input type="text" id="d-email" placeholder="email@example.com"></div>
+
+      <!-- ADD FORM -->
+      <div class="add-form" id="addForm" style="display:none">
+        <input type="text" id="newUrl" placeholder="رابط الموقع">
+        <input type="text" id="newTraffic" placeholder="الترافيك (50k)">
+        <input type="text" id="newPlatform" placeholder="المنصة (Salla / Zid)">
+        <button class="btn btn-pool" onclick="addNewLead()">+ Add Lead</button>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Pool</div>
+          <div class="stat-value" id="stat-pool" style="color:var(--pool)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Adel</div>
+          <div class="stat-value" id="stat-adel" style="color:var(--adel)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ahmed</div>
+          <div class="stat-value" id="stat-ahmed" style="color:var(--ahmed)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Youssef</div>
+          <div class="stat-value" id="stat-youssef" style="color:var(--youssef)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Deals Done</div>
+          <div class="stat-value" id="stat-deals" style="color:var(--success)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Off</div>
+          <div class="stat-value" id="stat-off" style="color:var(--off)">0</div>
         </div>
       </div>
-      <div>
-        <div class="detail-section-title">منصات التواصل الاجتماعي</div>
-        <div class="detail-grid">
-          <div class="detail-field"><label>📸 انستاجرام</label><input type="text" id="d-insta" placeholder="@username"></div>
-          <div class="detail-field"><label>👻 سنابشات</label><input type="text" id="d-snap" placeholder="@username"></div>
-          <div class="detail-field"><label>🎵 تيكتوك</label><input type="text" id="d-tiktok" placeholder="@username"></div>
-          <div class="detail-field"><label>𝕏 اكس (تويتر)</label><input type="text" id="d-x" placeholder="@username"></div>
-        </div>
+
+      <!-- CONTENT -->
+      <div id="leads-container">
+        <div class="spinner"></div>
       </div>
-    </div>
-    <div class="detail-actions" id="d-actions"></div>
+    </main>
   </div>
-</div>
 
-<!-- DELETE MODAL -->
-<div id="modal-bg">
-  <div id="modal">
-    <h2>Delete Lead?</h2>
-    <p>This action cannot be undone. The lead will be permanently removed.</p>
-    <div class="modal-btns">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+  <!-- DETAIL POPUP -->
+  <div id="detail-bg">
+    <div id="detail-panel">
+      <div class="detail-header">
+        <div>
+          <div class="detail-url" id="d-url"></div>
+          <div style="margin-top:8px" id="d-badge"></div>
+        </div>
+        <button class="detail-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div class="detail-body">
+        <div>
+          <div class="detail-section-title">معلومات الموقع</div>
+          <div class="detail-grid">
+            <div class="detail-field"><label>⚡ قوة الموقع</label><input type="text" id="d-strength"
+                placeholder="e.g. High / 85"></div>
+            <div class="detail-field"><label>📊 الترافيك التقريبي</label><input type="text" id="d-traffic"
+                placeholder="e.g. 50k / month"></div>
+            <div class="detail-field"><label>🛒 منصة المتجر</label><input type="text" id="d-platform"
+                placeholder="Salla / Zid / WooCommerce"></div>
+          </div>
+        </div>
+        <div>
+          <div class="detail-section-title">بيانات التواصل</div>
+          <div class="detail-grid">
+            <div class="detail-field"><label>📞 رقم تواصل على الموقع</label><input type="text" id="d-phone"
+                placeholder="05xxxxxxxx"></div>
+            <div class="detail-field"><label>📧 البريد الإلكتروني</label><input type="text" id="d-email"
+                placeholder="email@example.com"></div>
+          </div>
+        </div>
+        <div>
+          <div class="detail-section-title">منصات التواصل الاجتماعي</div>
+          <div class="detail-grid">
+            <div class="detail-field"><label>📸 انستاجرام</label><input type="text" id="d-insta"
+                placeholder="@username"></div>
+            <div class="detail-field"><label>👻 سنابشات</label><input type="text" id="d-snap" placeholder="@username">
+            </div>
+            <div class="detail-field"><label>🎵 تيكتوك</label><input type="text" id="d-tiktok" placeholder="@username">
+            </div>
+            <div class="detail-field"><label>𝕏 اكس (تويتر)</label><input type="text" id="d-x" placeholder="@username">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-actions" id="d-actions"></div>
     </div>
   </div>
-</div>
 
-<div id="toast"></div>
+  <!-- DELETE MODAL -->
+  <div id="modal-bg">
+    <div id="modal">
+      <h2>Delete Lead?</h2>
+      <p>This action cannot be undone. The lead will be permanently removed.</p>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
 
-<script>
-  const SUPABASE_URL = 'https://wqnnkghoaymrmumeyylc.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_Y_mJSINmekLqc_8-HVyPAA_KkEKq1K8';
+  <div id="toast"></div>
 
-  const { createClient } = supabase;
-  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+  <script>
+    const SUPABASE_URL = 'https://wqnnkghoaymrmumeyylc.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_Y_mJSINmekLqc_8-HVyPAA_KkEKq1K8';
 
-  let currentView     = 'none';
-  let allLeads        = [];
-  let pendingDeleteId = null;
-  let currentDetailId = null;
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const titles = {
-    none:    'Main Pool',
-    adel:    "Adel's Dashboard",
-    ahmed:   "Ahmed's Dashboard",
-    youssef: "Youssef's Dashboard",
-    deals:   'Deal Done',
-    off:     'Off Clients',
-  };
+    let currentView = 'none';
+    let allLeads = [];
+    let pendingDeleteId = null;
+    let currentDetailId = null;
 
-  const CARD_VIEWS  = ['none','adel','ahmed','youssef'];
-  const TABLE_VIEWS = ['deals','off'];
+    const titles = {
+      none: 'Main Pool',
+      adel: "Adel's Dashboard",
+      ahmed: "Ahmed's Dashboard",
+      youssef: "Youssef's Dashboard",
+      deals: 'Deal Done',
+      off: 'Off Clients',
+    };
 
-  async function setView(view) {
-    currentView = view;
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`btn-${view}`).classList.add('active');
-    document.getElementById('pageTitle').textContent = titles[view];
-    document.getElementById('addForm').style.display = view === 'none' ? 'flex' : 'none';
-    await fetchLeads();
-  }
+    const CARD_VIEWS = ['none', 'adel', 'ahmed', 'youssef'];
+    const TABLE_VIEWS = ['deals', 'off'];
 
-  async function fetchLeads() {
-    document.getElementById('leads-container').innerHTML = '<div class="spinner"></div>';
-    const { data, error } = await db.from('leads').select('*').order('created_at', { ascending: false });
-    if (error) { toast('Error loading leads'); return; }
-    allLeads = data || [];
-    updateStats();
-    renderFiltered();
-  }
+    async function setView(view) {
+      currentView = view;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-${view}`).classList.add('active');
+      document.getElementById('pageTitle').textContent = titles[view];
+      document.getElementById('addForm').style.display = view === 'none' ? 'flex' : 'none';
+      await fetchLeads();
+    }
 
-  function updateStats() {
-    document.getElementById('stat-pool').textContent    = allLeads.filter(l => l.assigned_to === 'none'    && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('stat-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel'    && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('stat-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed'   && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('stat-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('stat-deals').textContent   = allLeads.filter(l => l.status === 'deal_done').length;
-    document.getElementById('stat-off').textContent     = allLeads.filter(l => l.status === 'off').length;
+    async function fetchLeads() {
+      document.getElementById('leads-container').innerHTML = '<div class="spinner"></div>';
+      const { data, error } = await db.from('leads').select('*').order('created_at', { ascending: false });
+      if (error) { toast('Error loading leads'); return; }
+      allLeads = data || [];
+      updateStats();
+      renderFiltered();
+    }
 
-    document.getElementById('count-none').textContent    = allLeads.filter(l => l.assigned_to === 'none'    && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('count-adel').textContent    = allLeads.filter(l => l.assigned_to === 'adel'    && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('count-ahmed').textContent   = allLeads.filter(l => l.assigned_to === 'ahmed'   && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('count-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'off' && l.status !== 'deal_done').length;
-    document.getElementById('count-deals').textContent   = allLeads.filter(l => l.status === 'deal_done').length;
-    document.getElementById('count-off').textContent     = allLeads.filter(l => l.status === 'off').length;
-  }
+    function updateStats() {
+      document.getElementById('stat-pool').textContent = allLeads.filter(l => l.assigned_to === 'none' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('stat-adel').textContent = allLeads.filter(l => l.assigned_to === 'adel' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('stat-ahmed').textContent = allLeads.filter(l => l.assigned_to === 'ahmed' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('stat-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('stat-deals').textContent = allLeads.filter(l => l.status === 'deal_done').length;
+      document.getElementById('stat-off').textContent = allLeads.filter(l => l.status === 'off').length;
 
-  function renderFiltered() {
-    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      document.getElementById('count-none').textContent = allLeads.filter(l => l.assigned_to === 'none' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('count-adel').textContent = allLeads.filter(l => l.assigned_to === 'adel' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('count-ahmed').textContent = allLeads.filter(l => l.assigned_to === 'ahmed' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('count-youssef').textContent = allLeads.filter(l => l.assigned_to === 'youssef' && l.status !== 'off' && l.status !== 'deal_done').length;
+      document.getElementById('count-deals').textContent = allLeads.filter(l => l.status === 'deal_done').length;
+      document.getElementById('count-off').textContent = allLeads.filter(l => l.status === 'off').length;
+    }
 
-    if (TABLE_VIEWS.includes(currentView)) {
-      const statusFilter = currentView === 'deals' ? 'deal_done' : 'off';
-      let leads = allLeads.filter(l => l.status === statusFilter);
-      if (q) leads = leads.filter(l =>
-        (l.url||'').toLowerCase().includes(q) ||
-        (l.assigned_to||'').toLowerCase().includes(q) ||
-        (l.traffic||'').toLowerCase().includes(q) ||
-        (l.platform||'').toLowerCase().includes(q)
+    function renderFiltered() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      if (TABLE_VIEWS.includes(currentView)) {
+        const statusFilter = currentView === 'deals' ? 'deal_done' : 'off';
+        let leads = allLeads.filter(l => l.status === statusFilter);
+        if (q) leads = leads.filter(l =>
+          (l.url || '').toLowerCase().includes(q) ||
+          (l.assigned_to || '').toLowerCase().includes(q) ||
+          (l.traffic || '').toLowerCase().includes(q) ||
+          (l.platform || '').toLowerCase().includes(q)
+        );
+        renderTable(leads);
+        return;
+      }
+
+      // Card views — hide off and deal_done
+      let leads = allLeads.filter(l =>
+        l.assigned_to === currentView &&
+        l.status !== 'off' &&
+        l.status !== 'deal_done'
       );
-      renderTable(leads);
-      return;
+      if (q) {
+        leads = leads.filter(l =>
+          (l.url || '').toLowerCase().includes(q) ||
+          (l.traffic || '').toLowerCase().includes(q) ||
+          (l.platform || '').toLowerCase().includes(q) ||
+          (l.contact_phone || '').toLowerCase().includes(q) ||
+          (l.contact_email || '').toLowerCase().includes(q) ||
+          (l.social_snap || '').toLowerCase().includes(q) ||
+          (l.social_insta || '').toLowerCase().includes(q)
+        );
+      }
+      renderCards(leads);
     }
 
-    // Card views — hide off and deal_done
-    let leads = allLeads.filter(l =>
-      l.assigned_to === currentView &&
-      l.status !== 'off' &&
-      l.status !== 'deal_done'
-    );
-    if (q) {
-      leads = leads.filter(l =>
-        (l.url||'').toLowerCase().includes(q) ||
-        (l.traffic||'').toLowerCase().includes(q) ||
-        (l.platform||'').toLowerCase().includes(q) ||
-        (l.contact_phone||'').toLowerCase().includes(q) ||
-        (l.contact_email||'').toLowerCase().includes(q) ||
-        (l.social_snap||'').toLowerCase().includes(q) ||
-        (l.social_insta||'').toLowerCase().includes(q)
-      );
-    }
-    renderCards(leads);
-  }
-
-  // ── TABLE RENDER ─────────────────────────────────────────
-  function assignColor(a) {
-    const map = { adel:'var(--adel)', ahmed:'var(--ahmed)', youssef:'var(--youssef)' };
-    return map[a] || 'var(--muted)';
-  }
-
-  function renderTable(leads) {
-    const c = document.getElementById('leads-container');
-    const isDeals = currentView === 'deals';
-
-    if (!leads.length) {
-      c.innerHTML = `<div class="empty-state">No entries here yet.</div>`;
-      return;
+    // ── TABLE RENDER ─────────────────────────────────────────
+    function assignColor(a) {
+      const map = { adel: 'var(--adel)', ahmed: 'var(--ahmed)', youssef: 'var(--youssef)' };
+      return map[a] || 'var(--muted)';
     }
 
-    c.innerHTML = `
+    function renderTable(leads) {
+      const c = document.getElementById('leads-container');
+      const isDeals = currentView === 'deals';
+
+      if (!leads.length) {
+        c.innerHTML = `<div class="empty-state">No entries here yet.</div>`;
+        return;
+      }
+
+      c.innerHTML = `
       <div class="table-wrap">
         <table class="tbl">
           <thead>
@@ -628,10 +1297,10 @@
                 <td class="td-muted">${escHtml(l.platform || '—')}</td>
                 <td>
                   ${l.assigned_to && l.assigned_to !== 'none'
-                    ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:${assignColor(l.assigned_to)}">${l.assigned_to}</span>`
-                    : `<span class="td-muted">—</span>`}
+          ? `<span style="font-family:'DM Mono',monospace;font-size:12px;color:${assignColor(l.assigned_to)}">${l.assigned_to}</span>`
+          : `<span class="td-muted">—</span>`}
                 </td>
-                <td style="font-size:13px;text-align:center">${l.is_on_snap  ? '✓' : '<span style="color:var(--muted)">—</span>'}</td>
+                <td style="font-size:13px;text-align:center">${l.is_on_snap ? '✓' : '<span style="color:var(--muted)">—</span>'}</td>
                 <td style="font-size:13px;text-align:center">${l.is_on_phone ? '✓' : '<span style="color:var(--muted)">—</span>'}</td>
                 <td onclick="event.stopPropagation()">
                   <div class="td-actions">
@@ -644,94 +1313,94 @@
           </tbody>
         </table>
       </div>`;
-  }
+    }
 
-  // ── CARDS RENDER ─────────────────────────────────────────
-  function socialTags(l) {
-    const tags = [];
-    if (l.social_snap)   tags.push(`<span class="soc-tag snap">👻 ${escHtml(l.social_snap)}</span>`);
-    if (l.social_insta)  tags.push(`<span class="soc-tag insta">📸 ${escHtml(l.social_insta)}</span>`);
-    if (l.social_tiktok) tags.push(`<span class="soc-tag tiktok">🎵 ${escHtml(l.social_tiktok)}</span>`);
-    if (l.social_x)      tags.push(`<span class="soc-tag x">𝕏 ${escHtml(l.social_x)}</span>`);
-    return tags.join('');
-  }
+    // ── CARDS RENDER ─────────────────────────────────────────
+    function socialTags(l) {
+      const tags = [];
+      if (l.social_snap) tags.push(`<span class="soc-tag snap">👻 ${escHtml(l.social_snap)}</span>`);
+      if (l.social_insta) tags.push(`<span class="soc-tag insta">📸 ${escHtml(l.social_insta)}</span>`);
+      if (l.social_tiktok) tags.push(`<span class="soc-tag tiktok">🎵 ${escHtml(l.social_tiktok)}</span>`);
+      if (l.social_x) tags.push(`<span class="soc-tag x">𝕏 ${escHtml(l.social_x)}</span>`);
+      return tags.join('');
+    }
 
-  function contactState(l) {
-    if (l.is_on_snap && l.is_on_phone) return 'both';
-    if (l.is_on_snap)  return 'snap';
-    if (l.is_on_phone) return 'phone';
-    return '';
-  }
+    function contactState(l) {
+      if (l.is_on_snap && l.is_on_phone) return 'both';
+      if (l.is_on_snap) return 'snap';
+      if (l.is_on_phone) return 'phone';
+      return '';
+    }
 
-  function statusPicker(l) {
-    // Always show new + off; show deal_done only if assigned to someone
-    const opts = [
-      { v: 'new',  label: '🔵 New' },
-      ...(l.assigned_to !== 'none' ? [{ v: 'deal_done', label: '✅ Deal' }] : []),
-      { v: 'off',  label: '⚫ Off' },
-    ];
-    return opts.map(o => `
+    function statusPicker(l) {
+      // Always show new + off; show deal_done only if assigned to someone
+      const opts = [
+        { v: 'new', label: '🔵 New' },
+        ...(l.assigned_to !== 'none' ? [{ v: 'deal_done', label: '✅ Deal' }] : []),
+        { v: 'off', label: '⚫ Off' },
+      ];
+      return opts.map(o => `
       <span class="spick ${l.status === o.v ? 'active-' + o.v : ''}"
             onclick="setStatus(event,${l.id},'${o.v}')">${o.label}</span>
     `).join('');
-  }
+    }
 
-  function assignButtons(l) {
-    if (l.assigned_to === 'none') {
-      return `
+    function assignButtons(l) {
+      if (l.assigned_to === 'none') {
+        return `
         <button class="btn btn-adel    btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'adel',   status:'working'})">→ Adel</button>
         <button class="btn btn-ahmed   btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'ahmed',  status:'working'})">→ Ahmed</button>
         <button class="btn btn-youssef btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'youssef',status:'working'})">→ Youssef</button>
       `;
-    }
-    return `
+      }
+      return `
       <button class="btn btn-ghost btn-sm" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'})">↩ Release</button>
     `;
-  }
+    }
 
-  function detailAssignButtons(l) {
-    if (l.assigned_to === 'none') {
-      return `
+    function detailAssignButtons(l) {
+      if (l.assigned_to === 'none') {
+        return `
         <button class="btn btn-adel"    onclick="quickUpdate(${l.id},{assigned_to:'adel',   status:'working'});closeDetail()">→ Adel</button>
         <button class="btn btn-ahmed"   onclick="quickUpdate(${l.id},{assigned_to:'ahmed',  status:'working'});closeDetail()">→ Ahmed</button>
         <button class="btn btn-youssef" onclick="quickUpdate(${l.id},{assigned_to:'youssef',status:'working'});closeDetail()">→ Youssef</button>
       `;
-    }
-    return `
+      }
+      return `
       ${l.status !== 'deal_done' ? `<button class="btn btn-success" onclick="quickUpdate(${l.id},{status:'deal_done'});closeDetail()">✅ Deal Done</button>` : ''}
       <button class="btn btn-ghost" onclick="quickUpdate(${l.id},{assigned_to:'none',status:'new'});closeDetail()">↩ Release</button>
     `;
-  }
-
-  function renderCards(leads) {
-    const c = document.getElementById('leads-container');
-    if (!leads.length) {
-      c.innerHTML = `<div class="grid"><div class="empty-state">No leads here yet.</div></div>`;
-      return;
     }
-    c.innerHTML = `<div class="grid">${leads.map((l, i) => {
-      const soc    = socialTags(l);
-      const cstate = contactState(l);
-      return `
-      <div class="card" data-assign="${l.assigned_to}" ${cstate ? `data-contact="${cstate}"` : ''} style="animation-delay:${i*0.04}s"
+
+    function renderCards(leads) {
+      const c = document.getElementById('leads-container');
+      if (!leads.length) {
+        c.innerHTML = `<div class="grid"><div class="empty-state">No leads here yet.</div></div>`;
+        return;
+      }
+      c.innerHTML = `<div class="grid">${leads.map((l, i) => {
+        const soc = socialTags(l);
+        const cstate = contactState(l);
+        return `
+      <div class="card" data-assign="${l.assigned_to}" ${cstate ? `data-contact="${cstate}"` : ''} style="animation-delay:${i * 0.04}s"
            onclick="openDetail(${l.id})">
         <div class="card-header">
           <div class="card-url">${escHtml(l.url)}</div>
-          <span class="badge badge-${l.status}">${l.status.replace('_',' ')}</span>
+          <span class="badge badge-${l.status}">${l.status.replace('_', ' ')}</span>
         </div>
         <div class="card-pills">
-          ${l.traffic       ? `<div class="pill">📊 <b>${escHtml(l.traffic)}</b></div>`  : ''}
-          ${l.platform      ? `<div class="pill">🛒 <b>${escHtml(l.platform)}</b></div>` : ''}
-          ${l.strength      ? `<div class="pill">⚡ <b>${escHtml(l.strength)}</b></div>` : ''}
-          ${l.contact_phone ? `<div class="pill">📞 ${escHtml(l.contact_phone)}</div>`   : ''}
+          ${l.traffic ? `<div class="pill">📊 <b>${escHtml(l.traffic)}</b></div>` : ''}
+          ${l.platform ? `<div class="pill">🛒 <b>${escHtml(l.platform)}</b></div>` : ''}
+          ${l.strength ? `<div class="pill">⚡ <b>${escHtml(l.strength)}</b></div>` : ''}
+          ${l.contact_phone ? `<div class="pill">📞 ${escHtml(l.contact_phone)}</div>` : ''}
         </div>
         ${soc ? `<div class="card-socials">${soc}</div>` : ''}
         <div class="status-picker" onclick="event.stopPropagation()">
           ${statusPicker(l)}
         </div>
         <div class="contact-toggles" onclick="event.stopPropagation()">
-          <label class="ctoggle ${l.is_on_snap  ? 'snap-active'  : ''}" onclick="toggleContact(event,${l.id},'is_on_snap')">
-            <input type="checkbox" ${l.is_on_snap  ? 'checked' : ''}>👻 Snap
+          <label class="ctoggle ${l.is_on_snap ? 'snap-active' : ''}" onclick="toggleContact(event,${l.id},'is_on_snap')">
+            <input type="checkbox" ${l.is_on_snap ? 'checked' : ''}>👻 Snap
           </label>
           <label class="ctoggle ${l.is_on_phone ? 'phone-active' : ''}" onclick="toggleContact(event,${l.id},'is_on_phone')">
             <input type="checkbox" ${l.is_on_phone ? 'checked' : ''}>📞 Phone
@@ -743,145 +1412,146 @@
           <button class="btn btn-danger btn-sm" onclick="openModal(${l.id})">🗑</button>
         </div>
       </div>`;
-    }).join('')}</div>`;
-  }
+      }).join('')}</div>`;
+    }
 
-  // ── Status picker ─────────────────────────────────────────
-  async function setStatus(e, id, status) {
-    e.stopPropagation();
-    const { error } = await db.from('leads').update({ status }).eq('id', id);
-    if (error) { toast('Update failed ✗'); return; }
-    const lead = allLeads.find(x => x.id === id);
-    if (lead) lead.status = status;
-    updateStats();
-    renderFiltered();
-    toast('Status updated ✓');
-  }
+    // ── Status picker ─────────────────────────────────────────
+    async function setStatus(e, id, status) {
+      e.stopPropagation();
+      const { error } = await db.from('leads').update({ status }).eq('id', id);
+      if (error) { toast('Update failed ✗'); return; }
+      const lead = allLeads.find(x => x.id === id);
+      if (lead) lead.status = status;
+      updateStats();
+      renderFiltered();
+      toast('Status updated ✓');
+    }
 
-  // ── Contact toggle ────────────────────────────────────────
-  async function toggleContact(e, id, field) {
-    e.stopPropagation();
-    const lead = allLeads.find(x => x.id === id);
-    if (!lead) return;
-    const newVal = !lead[field];
-    const { error } = await db.from('leads').update({ [field]: newVal }).eq('id', id);
-    if (error) { toast('Update failed ✗'); return; }
-    lead[field] = newVal;
-    renderFiltered();
-  }
+    // ── Contact toggle ────────────────────────────────────────
+    async function toggleContact(e, id, field) {
+      e.stopPropagation();
+      const lead = allLeads.find(x => x.id === id);
+      if (!lead) return;
+      const newVal = !lead[field];
+      const { error } = await db.from('leads').update({ [field]: newVal }).eq('id', id);
+      if (error) { toast('Update failed ✗'); return; }
+      lead[field] = newVal;
+      renderFiltered();
+    }
 
-  // ── Detail Popup ──────────────────────────────────────────
-  function openDetail(id) {
-    const l = allLeads.find(x => x.id === id);
-    if (!l) return;
-    currentDetailId = id;
+    // ── Detail Popup ──────────────────────────────────────────
+    function openDetail(id) {
+      const l = allLeads.find(x => x.id === id);
+      if (!l) return;
+      currentDetailId = id;
 
-    document.getElementById('d-url').textContent = l.url;
-    document.getElementById('d-badge').innerHTML = `<span class="badge badge-${l.status}">${l.status.replace('_',' ')}</span>`;
-    document.getElementById('d-strength').value  = l.strength      || '';
-    document.getElementById('d-traffic').value   = l.traffic       || '';
-    document.getElementById('d-platform').value  = l.platform      || '';
-    document.getElementById('d-phone').value     = l.contact_phone || '';
-    document.getElementById('d-email').value     = l.contact_email || '';
-    document.getElementById('d-insta').value     = l.social_insta  || '';
-    document.getElementById('d-snap').value      = l.social_snap   || '';
-    document.getElementById('d-tiktok').value    = l.social_tiktok || '';
-    document.getElementById('d-x').value         = l.social_x      || '';
+      document.getElementById('d-url').textContent = l.url;
+      document.getElementById('d-badge').innerHTML = `<span class="badge badge-${l.status}">${l.status.replace('_', ' ')}</span>`;
+      document.getElementById('d-strength').value = l.strength || '';
+      document.getElementById('d-traffic').value = l.traffic || '';
+      document.getElementById('d-platform').value = l.platform || '';
+      document.getElementById('d-phone').value = l.contact_phone || '';
+      document.getElementById('d-email').value = l.contact_email || '';
+      document.getElementById('d-insta').value = l.social_insta || '';
+      document.getElementById('d-snap').value = l.social_snap || '';
+      document.getElementById('d-tiktok').value = l.social_tiktok || '';
+      document.getElementById('d-x').value = l.social_x || '';
 
-    document.getElementById('d-actions').innerHTML = `
+      document.getElementById('d-actions').innerHTML = `
       <button class="btn btn-pool" onclick="saveDetail()">💾 Save Changes</button>
       ${detailAssignButtons(l)}
       <button class="btn btn-danger" onclick="closeDetail();openModal(${l.id})">🗑 Delete</button>
     `;
-    document.getElementById('detail-bg').classList.add('show');
-  }
+      document.getElementById('detail-bg').classList.add('show');
+    }
 
-  function closeDetail() {
-    document.getElementById('detail-bg').classList.remove('show');
-    currentDetailId = null;
-  }
+    function closeDetail() {
+      document.getElementById('detail-bg').classList.remove('show');
+      currentDetailId = null;
+    }
 
-  async function saveDetail() {
-    if (!currentDetailId) return;
-    const updates = {
-      strength:      document.getElementById('d-strength').value.trim(),
-      traffic:       document.getElementById('d-traffic').value.trim(),
-      platform:      document.getElementById('d-platform').value.trim(),
-      contact_phone: document.getElementById('d-phone').value.trim(),
-      contact_email: document.getElementById('d-email').value.trim(),
-      social_insta:  document.getElementById('d-insta').value.trim(),
-      social_snap:   document.getElementById('d-snap').value.trim(),
-      social_tiktok: document.getElementById('d-tiktok').value.trim(),
-      social_x:      document.getElementById('d-x').value.trim(),
-    };
-    const { error } = await db.from('leads').update(updates).eq('id', currentDetailId);
-    if (error) { toast('Save failed ✗'); return; }
-    toast('Saved successfully ✓');
-    closeDetail();
-    fetchLeads();
-  }
+    async function saveDetail() {
+      if (!currentDetailId) return;
+      const updates = {
+        strength: document.getElementById('d-strength').value.trim(),
+        traffic: document.getElementById('d-traffic').value.trim(),
+        platform: document.getElementById('d-platform').value.trim(),
+        contact_phone: document.getElementById('d-phone').value.trim(),
+        contact_email: document.getElementById('d-email').value.trim(),
+        social_insta: document.getElementById('d-insta').value.trim(),
+        social_snap: document.getElementById('d-snap').value.trim(),
+        social_tiktok: document.getElementById('d-tiktok').value.trim(),
+        social_x: document.getElementById('d-x').value.trim(),
+      };
+      const { error } = await db.from('leads').update(updates).eq('id', currentDetailId);
+      if (error) { toast('Save failed ✗'); return; }
+      toast('Saved successfully ✓');
+      closeDetail();
+      fetchLeads();
+    }
 
-  document.getElementById('detail-bg').addEventListener('click', function(e) {
-    if (e.target === this) closeDetail();
-  });
+    document.getElementById('detail-bg').addEventListener('click', function (e) {
+      if (e.target === this) closeDetail();
+    });
 
-  // ── Add Lead ──────────────────────────────────────────────
-  async function addNewLead() {
-    const url      = document.getElementById('newUrl').value.trim();
-    const traffic  = document.getElementById('newTraffic').value.trim();
-    const platform = document.getElementById('newPlatform').value.trim();
-    if (!url) { toast('URL مطلوب'); return; }
-    const { error } = await db.from('leads').insert([{ url, traffic, platform, assigned_to:'none', status:'new' }]);
-    if (error) { toast('Error adding lead'); return; }
-    ['newUrl','newTraffic','newPlatform'].forEach(id => document.getElementById(id).value = '');
-    toast('Lead added ✓');
-    fetchLeads();
-  }
+    // ── Add Lead ──────────────────────────────────────────────
+    async function addNewLead() {
+      const url = document.getElementById('newUrl').value.trim();
+      const traffic = document.getElementById('newTraffic').value.trim();
+      const platform = document.getElementById('newPlatform').value.trim();
+      if (!url) { toast('URL مطلوب'); return; }
+      const { error } = await db.from('leads').insert([{ url, traffic, platform, assigned_to: 'none', status: 'new' }]);
+      if (error) { toast('Error adding lead'); return; }
+      ['newUrl', 'newTraffic', 'newPlatform'].forEach(id => document.getElementById(id).value = '');
+      toast('Lead added ✓');
+      fetchLeads();
+    }
 
-  async function quickUpdate(id, updates) {
-    const { error } = await db.from('leads').update(updates).eq('id', id);
-    if (error) { toast('Update failed'); return; }
-    toast('Updated ✓');
-    fetchLeads();
-  }
+    async function quickUpdate(id, updates) {
+      const { error } = await db.from('leads').update(updates).eq('id', id);
+      if (error) { toast('Update failed'); return; }
+      toast('Updated ✓');
+      fetchLeads();
+    }
 
-  // ── Delete ────────────────────────────────────────────────
-  function openModal(id) {
-    pendingDeleteId = id;
-    document.getElementById('modal-bg').classList.add('show');
-  }
-  function closeModal() {
-    pendingDeleteId = null;
-    document.getElementById('modal-bg').classList.remove('show');
-  }
-  async function confirmDelete() {
-    if (!pendingDeleteId) return;
-    const { error } = await db.from('leads').delete().eq('id', pendingDeleteId);
-    closeModal();
-    if (error) { toast('Delete failed'); return; }
-    toast('Lead deleted');
-    fetchLeads();
-  }
-  document.getElementById('modal-bg').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
+    // ── Delete ────────────────────────────────────────────────
+    function openModal(id) {
+      pendingDeleteId = id;
+      document.getElementById('modal-bg').classList.add('show');
+    }
+    function closeModal() {
+      pendingDeleteId = null;
+      document.getElementById('modal-bg').classList.remove('show');
+    }
+    async function confirmDelete() {
+      if (!pendingDeleteId) return;
+      const { error } = await db.from('leads').delete().eq('id', pendingDeleteId);
+      closeModal();
+      if (error) { toast('Delete failed'); return; }
+      toast('Lead deleted');
+      fetchLeads();
+    }
+    document.getElementById('modal-bg').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
 
-  // ── Toast ─────────────────────────────────────────────────
-  let toastTimer;
-  function toast(msg) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
-  }
+    // ── Toast ─────────────────────────────────────────────────
+    let toastTimer;
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+    }
 
-  function escHtml(s) {
-    if (!s) return '';
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+    function escHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
-  setView('none');
-</script>
+    setView('none');
+  </script>
 </body>
+
 </html>
